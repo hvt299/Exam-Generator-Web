@@ -59,7 +59,8 @@ export default function ExamGenerator() {
     formData.append('startQuestion', startQuestion.toString());
 
     try {
-      const response = await fetch('http://localhost:3001/api/v1/exams/mix-multi', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/api/v1/exams/mix-multi`, {
         method: 'POST',
         body: formData,
       });
