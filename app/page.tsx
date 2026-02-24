@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { UploadCloud, FileText, Loader2, Settings, FileCheck2, Info, CheckCircle2, AlertTriangle, Tags, ShieldAlert, FileWarning, Eye, AlertOctagon, Download, RefreshCw } from 'lucide-react';
+import { UploadCloud, FileText, Loader2, Settings, FileCheck2, Info, CheckCircle2, AlertTriangle, Tags, ShieldAlert, FileWarning, Eye, AlertOctagon, Download, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function ExamGenerator() {
   const [file, setFile] = useState<File | null>(null);
@@ -9,13 +9,21 @@ export default function ExamGenerator() {
   const [startCode, setStartCode] = useState(101);
   const [startQuestion, setStartQuestion] = useState(1);
 
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [department, setDepartment] = useState('SỞ GD&ĐT...');
+  const [school, setSchool] = useState('TRƯỜNG THPT...');
+  const [examName, setExamName] = useState('KIỂM TRA CUỐI KÌ I');
+  const [schoolYear, setSchoolYear] = useState('NĂM HỌC 2025 - 2026');
+  const [subject, setSubject] = useState('Toán');
+  const [duration, setDuration] = useState('90 phút');
+
   const [loadingState, setLoadingState] = useState<'none' | 'previewing' | 'downloading'>('none');
   const [step, setStep] = useState<1 | 2>(1);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [previewData, setPreviewData] = useState<any>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
   const handleFileProcess = (selectedFile: File) => {
     if (!selectedFile.name.endsWith('.docx')) {
@@ -73,11 +81,8 @@ export default function ExamGenerator() {
         setPreviewData(data);
         setStep(2);
       }
-    } catch (error: any) {
-      alert(error.message);
-    } finally {
-      setLoadingState('none');
-    }
+    } catch (error: any) { alert(error.message); }
+    finally { setLoadingState('none'); }
   };
 
   const handleDownloadZip = async () => {
@@ -90,6 +95,13 @@ export default function ExamGenerator() {
     formData.append('startCode', startCode.toString());
     formData.append('startQuestion', startQuestion.toString());
 
+    formData.append('department', department);
+    formData.append('school', school);
+    formData.append('examName', examName);
+    formData.append('schoolYear', schoolYear);
+    formData.append('subject', subject);
+    formData.append('duration', duration);
+
     try {
       const response = await fetch(`${apiUrl}/api/v1/exams/mix-multi`, {
         method: 'POST',
@@ -101,11 +113,8 @@ export default function ExamGenerator() {
       const blob = await response.blob();
       const downloadUrl = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = 'Bo_De_Thi.zip';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      a.href = downloadUrl; a.download = 'Bo_De_Thi.zip';
+      document.body.appendChild(a); a.click(); a.remove();
       window.URL.revokeObjectURL(downloadUrl);
 
     } catch (error: any) {
@@ -151,6 +160,7 @@ export default function ExamGenerator() {
           {/* BƯỚC 1: CẤU HÌNH & UPLOAD */}
           {step === 1 && (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              {/* Vùng Cấu hình Cơ bản */}
               <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-3">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Số lượng đề</label>
@@ -167,6 +177,62 @@ export default function ExamGenerator() {
                   <input type="number" min="1" value={startQuestion} onChange={(e) => setStartQuestion(parseInt(e.target.value))}
                     className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 sm:text-sm" />
                 </div>
+              </div>
+
+              {/* Vùng Cấu hình Header (Accordion) */}
+              <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
+                <button
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-blue-50 transition-colors focus:outline-none"
+                >
+                  <span className="font-semibold text-slate-700 text-sm flex items-center">
+                    <FileText className="w-4 h-4 mr-2 text-blue-600" />
+                    Cấu hình Tiêu đề File (Tùy chọn)
+                  </span>
+                  {showAdvanced ? <ChevronUp className="w-5 h-5 text-slate-500" /> : <ChevronDown className="w-5 h-5 text-slate-500" />}
+                </button>
+
+                {showAdvanced && (
+                  <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white border-t border-slate-200 animate-in slide-in-from-top-2">
+                    {/* Hàng 1 */}
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1">Sở / Phòng Giáo Dục</label>
+                      <input type="text" value={department} onChange={(e) => setDepartment(e.target.value)}
+                        className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 text-sm font-medium" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1">Tên Trường</label>
+                      <input type="text" value={school} onChange={(e) => setSchool(e.target.value)}
+                        className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 text-sm font-medium" />
+                    </div>
+
+                    {/* Hàng 2 */}
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1">Tên Kì Kiểm Tra</label>
+                      <input type="text" value={examName} onChange={(e) => setExamName(e.target.value)}
+                        className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 text-sm font-medium" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1">Năm Học</label>
+                      <input type="text" value={schoolYear} onChange={(e) => setSchoolYear(e.target.value)}
+                        className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 text-sm font-medium" />
+                    </div>
+
+                    {/* Hàng 3 */}
+                    <div className="grid grid-cols-2 gap-4 sm:col-span-2">
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 mb-1">Môn học</label>
+                        <input type="text" value={subject} onChange={(e) => setSubject(e.target.value)}
+                          className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 text-sm font-medium" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 mb-1">Thời gian</label>
+                        <input type="text" value={duration} onChange={(e) => setDuration(e.target.value)}
+                          className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 text-sm font-medium" />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>
