@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { UploadCloud, FileText, Loader2, Settings, FileCheck2, Info, CheckCircle2, AlertTriangle, Tags, ShieldAlert, FileWarning, Eye, AlertOctagon, Download, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function ExamGenerator() {
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [numExams, setNumExams] = useState(4);
   const [startCode, setStartCode] = useState(101);
   const [startQuestion, setStartQuestion] = useState(1);
@@ -26,42 +26,46 @@ export default function ExamGenerator() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-  const handleFileProcess = (selectedFile: File) => {
-    if (!selectedFile.name.endsWith('.docx')) {
-      alert('Hệ thống chỉ chấp nhận file Word định dạng .docx');
-      return;
+  const handleFilesProcess = (selectedFiles: FileList | File[]) => {
+    const validFiles: File[] = [];
+    Array.from(selectedFiles).forEach(f => {
+      if (f.name.endsWith('.docx')) validFiles.push(f);
+      else alert(`File ${f.name} bị từ chối vì không phải định dạng .docx`);
+    });
+
+    if (validFiles.length > 0) {
+      setFiles(prev => [...prev, ...validFiles]);
+      setValidationErrors([]);
+      setPreviewData(null);
+      setStep(1);
     }
-    setFile(selectedFile);
-    setValidationErrors([]);
-    setPreviewData(null);
-    setStep(1);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      handleFileProcess(e.target.files[0]);
-    }
+    if (e.target.files && e.target.files.length > 0) handleFilesProcess(e.target.files);
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (loadingState === 'none' && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFileProcess(e.dataTransfer.files[0]);
+      handleFilesProcess(e.dataTransfer.files);
     }
   };
 
+  const removeFile = (indexToRemove: number) => {
+    setFiles(files.filter((_, idx) => idx !== indexToRemove));
+  };
+
   const handlePreview = async () => {
-    if (!file) return;
+    if (files.length === 0) return;
     setLoadingState('previewing');
     setValidationErrors([]);
     setPreviewData(null);
 
     const formData = new FormData();
-    formData.append('file', file);
+    files.forEach(f => formData.append('files', f));
     formData.append('numExams', numExams.toString());
     formData.append('startCode', startCode.toString());
     formData.append('startQuestion', startQuestion.toString());
@@ -87,11 +91,11 @@ export default function ExamGenerator() {
   };
 
   const handleDownloadZip = async () => {
-    if (!file) return;
+    if (files.length === 0) return;
     setLoadingState('downloading');
 
     const formData = new FormData();
-    formData.append('file', file);
+    files.forEach(f => formData.append('files', f));
     formData.append('numExams', numExams.toString());
     formData.append('startCode', startCode.toString());
     formData.append('startQuestion', startQuestion.toString());
@@ -252,19 +256,31 @@ export default function ExamGenerator() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Đề thi gốc (.docx)</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Danh sách Đề thi gốc (.docx)</label>
                 <div
                   onClick={() => { if (fileInputRef.current) { fileInputRef.current.value = ''; fileInputRef.current.click(); } }}
                   onDragOver={handleDragOver} onDrop={handleDrop}
-                  className={`mt-1 flex flex-col justify-center items-center px-6 pt-10 pb-10 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 
-                    ${file ? 'border-green-400 bg-green-50 hover:bg-green-100' : 'border-slate-300 hover:border-blue-400 bg-white'}`}
+                  className={`mt-1 flex flex-col justify-center items-center px-6 py-8 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 
+                    ${files.length > 0 ? 'border-green-400 bg-green-50/50 hover:bg-green-50' : 'border-slate-300 hover:border-blue-400 bg-white'}`}
                 >
-                  {file ? (
-                    <div className="flex flex-col items-center">
-                      <FileCheck2 className="mx-auto h-12 w-12 text-green-500 mb-3" />
-                      <span className="font-bold text-green-700 text-center text-lg">{file.name}</span>
-                      <span className="text-sm font-medium text-green-600 mt-2 bg-white px-3 py-1 rounded-full shadow-sm border border-green-200">
-                        Nhấn để đổi file khác
+                  {files.length > 0 ? (
+                    <div className="flex flex-col items-center w-full max-w-md">
+                      <FileCheck2 className="mx-auto h-10 w-10 text-green-500 mb-2" />
+                      <span className="font-bold text-green-700 text-center text-lg mb-3">Đã nạp {files.length} Đề gốc</span>
+
+                      <div className="w-full max-h-40 overflow-y-auto space-y-2 mb-4 bg-white p-2.5 rounded-lg border border-green-200 shadow-sm">
+                        {files.map((f, i) => (
+                          <div key={i} className="text-sm font-medium text-slate-700 bg-green-50 px-3 py-2 rounded-md flex justify-between items-center group">
+                            <span className="truncate mr-4">[{i + 1}] {f.name}</span>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); removeFile(i); }}
+                              className="text-red-400 hover:text-red-600 bg-red-50 hover:bg-red-100 p-1 rounded transition-colors"
+                            >✕</button>
+                          </div>
+                        ))}
+                      </div>
+                      <span className="text-sm font-medium text-green-700 bg-white px-4 py-1.5 rounded-full shadow-sm border border-green-200 hover:bg-green-50">
+                        + Nhấn hoặc kéo thả thêm file
                       </span>
                     </div>
                   ) : (
@@ -272,11 +288,11 @@ export default function ExamGenerator() {
                       <UploadCloud className="mx-auto h-14 w-14 mb-4 text-slate-400" />
                       <div className="flex text-base text-slate-600 justify-center font-semibold">
                         <span className="text-blue-600 hover:text-blue-500">Tải file lên</span>
-                        <p className="pl-1 font-medium">hoặc kéo thả vào vùng này</p>
+                        <p className="pl-1 font-medium">hoặc kéo thả nhiều file vào đây</p>
                       </div>
                     </>
                   )}
-                  <input ref={fileInputRef} type="file" accept=".docx" className="hidden" onChange={handleFileChange} />
+                  <input ref={fileInputRef} type="file" accept=".docx" multiple className="hidden" onChange={handleFileChange} />
                 </div>
               </div>
 
@@ -300,9 +316,9 @@ export default function ExamGenerator() {
 
               <button
                 onClick={handlePreview}
-                disabled={!file}
+                disabled={files.length === 0}
                 className={`w-full flex items-center justify-center py-4 px-4 rounded-xl shadow-md text-lg font-bold text-white transition-all 
-                  ${!file ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-blue-600 hover:bg-blue-700 active:scale-[0.98]'}`}
+                  ${files.length === 0 ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-blue-600 hover:bg-blue-700 active:scale-[0.98]'}`}
               >
                 <Eye className="mr-2 h-6 w-6" />
                 Kiểm tra File & Xem trước
@@ -409,7 +425,7 @@ export default function ExamGenerator() {
 
         </div>
 
-        {/* VÙNG THÔNG TIN QUY TẮC CHI TIẾT (GIỮ NGUYÊN BÊN DƯỚI) */}
+        {/* VÙNG THÔNG TIN QUY TẮC CHI TIẾT */}
         <div className="bg-white p-8 md:p-10 rounded-2xl shadow-md border border-slate-200 space-y-8">
           <div className="flex items-center border-b border-slate-100 pb-5">
             <Info className="h-7 w-7 text-blue-600 mr-3" />
