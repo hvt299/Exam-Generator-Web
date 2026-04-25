@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { UploadCloud, FileText, Loader2, Settings, FileCheck2, Info, CheckCircle2, AlertTriangle, Tags, ShieldAlert, FileWarning, Eye, AlertOctagon, Download, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { UploadCloud, FileText, Loader2, Settings, FileCheck2, Info, CheckCircle2, AlertTriangle, Tags, ShieldAlert, Eye, AlertOctagon, Download, RefreshCw, BookOpen, X, Sparkles } from 'lucide-react';
 
 export default function ExamGenerator() {
   const [files, setFiles] = useState<File[]>([]);
@@ -22,6 +22,9 @@ export default function ExamGenerator() {
   const [step, setStep] = useState<1 | 2>(1);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [previewData, setPreviewData] = useState<any>(null);
+
+  const [isDocsOpen, setIsDocsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'rules' | 'features' | 'limitations'>('rules');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
@@ -72,20 +75,12 @@ export default function ExamGenerator() {
 
     try {
       const response = await fetch(`${apiUrl}/api/v1/exams/preview`, {
-        method: 'POST',
-        body: formData,
+        method: 'POST', body: formData,
       });
-
       if (!response.ok) throw new Error('Có lỗi xảy ra khi kết nối máy chủ');
-
       const data = await response.json();
-
-      if (!data.success) {
-        setValidationErrors(data.errors);
-      } else {
-        setPreviewData(data);
-        setStep(2);
-      }
+      if (!data.success) setValidationErrors(data.errors);
+      else { setPreviewData(data); setStep(2); }
     } catch (error: any) { alert(error.message); }
     finally { setLoadingState('none'); }
   };
@@ -99,7 +94,6 @@ export default function ExamGenerator() {
     formData.append('numExams', numExams.toString());
     formData.append('startCode', startCode.toString());
     formData.append('startQuestion', startQuestion.toString());
-
     formData.append('useHeader', useHeader.toString());
     formData.append('useFooter', useFooter.toString());
     formData.append('department', department);
@@ -111,10 +105,8 @@ export default function ExamGenerator() {
 
     try {
       const response = await fetch(`${apiUrl}/api/v1/exams/mix-multi`, {
-        method: 'POST',
-        body: formData,
+        method: 'POST', body: formData,
       });
-
       if (!response.ok) throw new Error('Định dạng file không chuẩn hoặc có lỗi từ máy chủ!');
 
       const blob = await response.blob();
@@ -123,423 +115,397 @@ export default function ExamGenerator() {
       a.href = downloadUrl; a.download = 'Bo_De_Thi.zip';
       document.body.appendChild(a); a.click(); a.remove();
       window.URL.revokeObjectURL(downloadUrl);
-
-    } catch (error: any) {
-      alert(error.message);
-    } finally {
-      setLoadingState('none');
-    }
+    } catch (error: any) { alert(error.message); }
+    finally { setLoadingState('none'); }
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 flex flex-col items-center py-10 px-4 sm:px-6 lg:px-8 font-sans relative">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800">
 
-      {/* MODAL OVERLAY KHÓA MÀN HÌNH */}
+      {/* NAVBAR */}
+      <header className="sticky top-0 z-40 w-full backdrop-blur-lg bg-white/80 border-b border-slate-200 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="bg-blue-600 p-2 rounded-lg">
+              <Settings className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-bold text-xl tracking-tight text-slate-900">ExamGen <span className="text-blue-600 font-black">PRO</span></span>
+          </div>
+          <button
+            onClick={() => setIsDocsOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-full transition-colors"
+          >
+            <BookOpen className="w-4 h-4" /> Hướng dẫn & Quy chuẩn
+          </button>
+        </div>
+      </header>
+
+      {/* OVERLAY LOADER */}
       {loadingState !== 'none' && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity">
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-900/40 backdrop-blur-sm transition-opacity">
           <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-sm w-full mx-4 animate-in fade-in zoom-in duration-200">
             <Loader2 className="animate-spin h-14 w-14 text-blue-600 mb-4" />
-            <h3 className="text-xl font-bold text-slate-800">
-              {loadingState === 'previewing' ? 'Đang kiểm tra dữ liệu...' : 'Đang đóng gói file ZIP...'}
-            </h3>
-            <p className="text-slate-500 mt-2 text-sm text-center leading-relaxed">
-              Quá trình này có thể mất vài giây, vui lòng không đóng trình duyệt.
-            </p>
+            <h3 className="text-xl font-bold text-slate-800">{loadingState === 'previewing' ? 'Đang phân tích dữ liệu...' : 'Đang đóng gói file ZIP...'}</h3>
+            <p className="text-slate-500 mt-2 text-sm text-center">Vui lòng không đóng trình duyệt.</p>
           </div>
         </div>
       )}
 
-      <div className="max-w-5xl w-full space-y-8">
+      {/* MAIN CONTENT */}
+      <main className="grow flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl w-full">
 
-        <div className="bg-white p-8 md:p-10 rounded-2xl shadow-lg border border-slate-100">
-          <div className="flex flex-col items-center mb-8">
-            <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-              <Settings className="h-8 w-8 text-blue-600" />
-            </div>
-            <h2 className="text-center text-3xl font-extrabold text-slate-900 tracking-tight">
-              Exam Generator
-            </h2>
-            <p className="mt-2 text-center text-sm text-slate-500 font-medium">
-              Tự động hoán vị câu hỏi, đáp án và xuất ma trận Excel
-            </p>
+          <div className="text-center mb-10">
+            <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight sm:text-5xl mb-4">Hệ thống Trộn Đề Thông Minh</h1>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">Upload đề thi gốc, tự động hoán vị, dàn trang tối ưu và xuất ma trận Excel chỉ trong vài giây.</p>
           </div>
 
-          {/* BƯỚC 1: CẤU HÌNH & UPLOAD */}
-          {step === 1 && (
-            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              {/* Vùng Cấu hình Cơ bản */}
-              <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-3">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Số lượng đề</label>
-                  <input type="number" min="1" max="24" value={numExams} onChange={(e) => setNumExams(parseInt(e.target.value))}
-                    className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 sm:text-sm" />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Mã bắt đầu</label>
-                  <input type="number" min="1" value={startCode} onChange={(e) => setStartCode(parseInt(e.target.value))}
-                    className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 sm:text-sm" />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Câu bắt đầu</label>
-                  <input type="number" min="1" value={startQuestion} onChange={(e) => setStartQuestion(parseInt(e.target.value))}
-                    className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 sm:text-sm" />
-                </div>
-              </div>
-
-              {/* VÙNG CẤU HÌNH HEADER & FOOTER (TOGGLE SWITCHES) */}
-              <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm transition-all duration-300">
-                <div className="p-4 bg-slate-50 border-b border-slate-100 flex flex-col sm:flex-row gap-6 justify-between">
-                  <label className="flex items-center cursor-pointer select-none">
-                    <div className="relative">
-                      <input type="checkbox" className="sr-only" checked={useHeader} onChange={() => setUseHeader(!useHeader)} />
-                      <div className={`block w-11 h-6 rounded-full transition-colors ${useHeader ? 'bg-blue-600' : 'bg-slate-300'}`}></div>
-                      <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${useHeader ? 'transform translate-x-5' : ''}`}></div>
-                    </div>
-                    <span className="ml-3 font-semibold text-slate-700 text-sm flex items-center">
-                      <FileText className="w-4 h-4 mr-2 text-blue-600" /> Bổ sung Header (Sở, Trường, Mã đề...)
-                    </span>
-                  </label>
-
-                  <label className="flex items-center cursor-pointer select-none">
-                    <div className="relative">
-                      <input type="checkbox" className="sr-only" checked={useFooter} onChange={() => setUseFooter(!useFooter)} />
-                      <div className={`block w-11 h-6 rounded-full transition-colors ${useFooter ? 'bg-blue-600' : 'bg-slate-300'}`}></div>
-                      <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${useFooter ? 'transform translate-x-5' : ''}`}></div>
-                    </div>
-                    <span className="ml-3 font-semibold text-slate-700 text-sm flex items-center">
-                      <FileText className="w-4 h-4 mr-2 text-blue-600" /> Bổ sung Footer (HẾT)
-                    </span>
-                  </label>
+          <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100/50">
+            {step === 1 && (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {/* Vùng Cấu hình Cơ bản */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Số lượng đề mã</label>
+                    <input type="number" min="1" max="24" value={numExams} onChange={(e) => setNumExams(parseInt(e.target.value))}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Mã bắt đầu</label>
+                    <input type="number" min="1" value={startCode} onChange={(e) => setStartCode(parseInt(e.target.value))}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 transition-all font-medium" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Câu bắt đầu</label>
+                    <input type="number" min="1" value={startQuestion} onChange={(e) => setStartQuestion(parseInt(e.target.value))}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 transition-all font-medium" />
+                  </div>
                 </div>
 
-                {useHeader && (
-                  <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white border-t border-slate-200 animate-in slide-in-from-top-2">
-                    {/* Hàng 1 */}
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-500 mb-1">Sở / Phòng Giáo Dục</label>
-                      <input type="text" value={department} onChange={(e) => setDepartment(e.target.value)}
-                        className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 text-sm font-medium" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-500 mb-1">Tên Trường</label>
-                      <input type="text" value={school} onChange={(e) => setSchool(e.target.value)}
-                        className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 text-sm font-medium" />
-                    </div>
+                {/* Vùng Cấu hình Header & Footer */}
+                <div className="border border-slate-200 rounded-2xl overflow-hidden transition-all duration-300">
+                  <div className="p-5 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row gap-6 justify-between items-center">
+                    <label className="flex items-center cursor-pointer group w-full sm:w-auto">
+                      <div className="relative">
+                        <input type="checkbox" className="sr-only" checked={useHeader} onChange={() => setUseHeader(!useHeader)} />
+                        <div className={`block w-12 h-7 rounded-full transition-colors ${useHeader ? 'bg-blue-600' : 'bg-slate-300'}`}></div>
+                        <div className={`absolute left-1 top-1 bg-white w-5 h-5 rounded-full transition-transform ${useHeader ? 'transform translate-x-5' : ''}`}></div>
+                      </div>
+                      <span className="ml-3 font-semibold text-slate-700 text-sm group-hover:text-blue-600 transition-colors">Bổ sung Header (Tiêu đề)</span>
+                    </label>
 
-                    {/* Hàng 2 */}
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-500 mb-1">Tên Kì Kiểm Tra</label>
-                      <input type="text" value={examName} onChange={(e) => setExamName(e.target.value)}
-                        className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 text-sm font-medium" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-500 mb-1">Năm Học</label>
-                      <input type="text" value={schoolYear} onChange={(e) => setSchoolYear(e.target.value)}
-                        className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 text-sm font-medium" />
-                    </div>
+                    <label className="flex items-center cursor-pointer group w-full sm:w-auto">
+                      <div className="relative">
+                        <input type="checkbox" className="sr-only" checked={useFooter} onChange={() => setUseFooter(!useFooter)} />
+                        <div className={`block w-12 h-7 rounded-full transition-colors ${useFooter ? 'bg-blue-600' : 'bg-slate-300'}`}></div>
+                        <div className={`absolute left-1 top-1 bg-white w-5 h-5 rounded-full transition-transform ${useFooter ? 'transform translate-x-5' : ''}`}></div>
+                      </div>
+                      <span className="ml-3 font-semibold text-slate-700 text-sm group-hover:text-blue-600 transition-colors">Bổ sung Footer (HẾT)</span>
+                    </label>
+                  </div>
 
-                    {/* Hàng 3 */}
-                    <div className="grid grid-cols-2 gap-4 sm:col-span-2">
+                  {useHeader && (
+                    <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-5 bg-white animate-in slide-in-from-top-2">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-500 mb-1">Môn học</label>
-                        <input type="text" value={subject} onChange={(e) => setSubject(e.target.value)}
-                          className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 text-sm font-medium" />
+                        <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Sở / Phòng GD</label>
+                        <input type="text" value={department} onChange={(e) => setDepartment(e.target.value)}
+                          className="w-full border-b-2 border-slate-200 bg-transparent py-2 focus:border-blue-600 focus:outline-none transition-colors font-medium text-slate-800" />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-500 mb-1">Thời gian</label>
-                        <input type="text" value={duration} onChange={(e) => setDuration(e.target.value)}
-                          className="block w-full border border-slate-300 rounded-lg shadow-sm py-2 px-3 focus:ring-2 focus:ring-blue-500 text-sm font-medium" />
+                        <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Tên Trường</label>
+                        <input type="text" value={school} onChange={(e) => setSchool(e.target.value)}
+                          className="w-full border-b-2 border-slate-200 bg-transparent py-2 focus:border-blue-600 focus:outline-none transition-colors font-medium text-slate-800" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Kì Kiểm Tra</label>
+                        <input type="text" value={examName} onChange={(e) => setExamName(e.target.value)}
+                          className="w-full border-b-2 border-slate-200 bg-transparent py-2 focus:border-blue-600 focus:outline-none transition-colors font-medium text-slate-800" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Năm Học</label>
+                        <input type="text" value={schoolYear} onChange={(e) => setSchoolYear(e.target.value)}
+                          className="w-full border-b-2 border-slate-200 bg-transparent py-2 focus:border-blue-600 focus:outline-none transition-colors font-medium text-slate-800" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 sm:col-span-2">
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Môn học</label>
+                          <input type="text" value={subject} onChange={(e) => setSubject(e.target.value)}
+                            className="w-full border-b-2 border-slate-200 bg-transparent py-2 focus:border-blue-600 focus:outline-none transition-colors font-medium text-slate-800" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Thời gian</label>
+                          <input type="text" value={duration} onChange={(e) => setDuration(e.target.value)}
+                            className="w-full border-b-2 border-slate-200 bg-transparent py-2 focus:border-blue-600 focus:outline-none transition-colors font-medium text-slate-800" />
+                        </div>
                       </div>
                     </div>
+                  )}
+                </div>
+
+                {/* Vùng Upload Files */}
+                <div>
+                  <div
+                    onClick={() => { if (fileInputRef.current) { fileInputRef.current.value = ''; fileInputRef.current.click(); } }}
+                    onDragOver={handleDragOver} onDrop={handleDrop}
+                    className={`flex flex-col items-center justify-center p-10 border-2 border-dashed rounded-3xl cursor-pointer transition-all duration-300
+                      ${files.length > 0 ? 'border-blue-400 bg-blue-50/30 hover:bg-blue-50/50' : 'border-slate-300 hover:border-blue-500 hover:bg-slate-50 bg-white'}`}
+                  >
+                    {files.length > 0 ? (
+                      <div className="w-full max-w-lg flex flex-col items-center">
+                        <div className="bg-green-100 p-3 rounded-full mb-3">
+                          <CheckCircle2 className="h-8 w-8 text-green-600" />
+                        </div>
+                        <span className="font-extrabold text-slate-800 text-xl mb-4">Đã nạp {files.length} Đề gốc</span>
+                        <div className="w-full max-h-48 overflow-y-auto space-y-2.5 mb-5 px-2">
+                          {files.map((f, i) => (
+                            <div key={i} className="flex justify-between items-center bg-white border border-slate-200 p-3 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+                              <div className="flex items-center truncate">
+                                <span className="bg-slate-100 text-slate-500 font-mono text-xs px-2 py-1 rounded mr-3">#{i + 1}</span>
+                                <span className="font-medium text-slate-700 truncate">{f.name}</span>
+                              </div>
+                              <button onClick={(e) => { e.stopPropagation(); removeFile(i); }} className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition-colors">
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                        <span className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">+ Nhấn để nạp thêm file</span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="bg-slate-100 p-4 rounded-full mb-4 group-hover:scale-110 transition-transform">
+                          <UploadCloud className="h-10 w-10 text-blue-600" />
+                        </div>
+                        <h4 className="text-lg font-bold text-slate-800 mb-1">Kéo thả file Word vào đây</h4>
+                        <p className="text-slate-500 text-sm font-medium">Hỗ trợ nhận diện nhiều đề gốc (.docx)</p>
+                      </>
+                    )}
+                    <input ref={fileInputRef} type="file" accept=".docx" multiple className="hidden" onChange={handleFileChange} />
+                  </div>
+                </div>
+
+                {validationErrors.length > 0 && (
+                  <div className="bg-red-50/80 p-6 rounded-2xl border border-red-200 animate-in fade-in">
+                    <div className="flex items-center mb-4">
+                      <AlertOctagon className="h-6 w-6 text-red-600 mr-2" />
+                      <h3 className="text-lg font-bold text-red-800">Cần sửa {validationErrors.length} lỗi trong file gốc</h3>
+                    </div>
+                    <ul className="list-disc pl-5 space-y-2.5 text-sm text-red-700">
+                      {validationErrors.map((err, idx) => (
+                        <li key={idx} className="font-medium leading-relaxed">{err}</li>
+                      ))}
+                    </ul>
                   </div>
                 )}
-              </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Danh sách Đề thi gốc (.docx)</label>
-                <div
-                  onClick={() => { if (fileInputRef.current) { fileInputRef.current.value = ''; fileInputRef.current.click(); } }}
-                  onDragOver={handleDragOver} onDrop={handleDrop}
-                  className={`mt-1 flex flex-col justify-center items-center px-6 py-8 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 
-                    ${files.length > 0 ? 'border-green-400 bg-green-50/50 hover:bg-green-50' : 'border-slate-300 hover:border-blue-400 bg-white'}`}
+                <button
+                  onClick={handlePreview} disabled={files.length === 0}
+                  className={`w-full py-4 px-6 rounded-2xl shadow-lg text-lg font-bold text-white transition-all transform flex items-center justify-center
+                    ${files.length === 0 ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-slate-900 hover:bg-blue-700 hover:-translate-y-1 hover:shadow-xl active:scale-[0.98]'}`}
                 >
-                  {files.length > 0 ? (
-                    <div className="flex flex-col items-center w-full max-w-md">
-                      <FileCheck2 className="mx-auto h-10 w-10 text-green-500 mb-2" />
-                      <span className="font-bold text-green-700 text-center text-lg mb-3">Đã nạp {files.length} Đề gốc</span>
+                  <Sparkles className="mr-2 h-5 w-5" /> Phân tích File & Xem trước
+                </button>
+              </div>
+            )}
 
-                      <div className="w-full max-h-40 overflow-y-auto space-y-2 mb-4 bg-white p-2.5 rounded-lg border border-green-200 shadow-sm">
-                        {files.map((f, i) => (
-                          <div key={i} className="text-sm font-medium text-slate-700 bg-green-50 px-3 py-2 rounded-md flex justify-between items-center group">
-                            <span className="truncate mr-4">[{i + 1}] {f.name}</span>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); removeFile(i); }}
-                              className="text-red-400 hover:text-red-600 bg-red-50 hover:bg-red-100 p-1 rounded transition-colors"
-                            >✕</button>
-                          </div>
+            {step === 2 && previewData && (
+              <div className="space-y-8 animate-in slide-in-from-right-8 duration-500">
+                <div className="bg-green-50 p-5 rounded-2xl border border-green-200 flex items-start sm:items-center">
+                  <CheckCircle2 className="h-6 w-6 text-green-600 mr-3 mt-0.5 sm:mt-0 shrink-0" />
+                  <p className="text-sm text-green-800 font-medium leading-relaxed">
+                    Dữ liệu hoàn hảo! Thuật toán đã bóc tách thành công. Kiểm tra nhanh Ma trận bên dưới và tải File ZIP.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="font-bold text-slate-800 mb-4 flex items-center text-lg">
+                    <FileText className="w-5 h-5 mr-2 text-blue-600" /> Trích xuất Ma trận (Mô phỏng)
+                  </h4>
+                  <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-sm">
+                    <table className="min-w-full divide-y divide-slate-200 text-sm text-center">
+                      <thead className="bg-slate-50/80">
+                        <tr>
+                          <th className="px-4 py-4 font-bold text-slate-700 border-r border-slate-200 uppercase tracking-wider text-xs">Câu</th>
+                          {previewData.matrix.map((_: any, i: number) => (
+                            <th key={i} className="px-4 py-4 font-bold text-slate-700 uppercase tracking-wider text-xs">Mã {startCode + i}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-slate-100">
+                        {previewData.matrix[0].slice(0, 10).map((_: any, qIdx: number) => (
+                          <tr key={qIdx} className="hover:bg-blue-50/50 transition-colors">
+                            <td className="px-4 py-3 font-semibold text-slate-600 border-r border-slate-200">{startQuestion + qIdx}</td>
+                            {previewData.matrix.map((examObj: any, eIdx: number) => (
+                              <td key={eIdx} className={`px-4 py-3 font-bold ${examObj[qIdx] === '?' ? 'text-red-500' : 'text-blue-700'}`}>
+                                {examObj[qIdx]}
+                              </td>
+                            ))}
+                          </tr>
                         ))}
-                      </div>
-                      <span className="text-sm font-medium text-green-700 bg-white px-4 py-1.5 rounded-full shadow-sm border border-green-200 hover:bg-green-50">
-                        + Nhấn hoặc kéo thả thêm file
-                      </span>
-                    </div>
-                  ) : (
-                    <>
-                      <UploadCloud className="mx-auto h-14 w-14 mb-4 text-slate-400" />
-                      <div className="flex text-base text-slate-600 justify-center font-semibold">
-                        <span className="text-blue-600 hover:text-blue-500">Tải file lên</span>
-                        <p className="pl-1 font-medium">hoặc kéo thả nhiều file vào đây</p>
-                      </div>
-                    </>
-                  )}
-                  <input ref={fileInputRef} type="file" accept=".docx" multiple className="hidden" onChange={handleFileChange} />
+                        {previewData.matrix[0].length > 10 && (
+                          <tr>
+                            <td colSpan={numExams + 1} className="px-4 py-4 text-slate-400 font-medium bg-slate-50">
+                              ... ({previewData.matrix[0].length - 10} câu còn lại xem chi tiết trong file Excel)
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-100">
+                  <button onClick={() => setStep(1)}
+                    className="flex-1 flex items-center justify-center py-4 px-4 border-2 border-slate-200 rounded-2xl font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all">
+                    <RefreshCw className="mr-2 h-5 w-5" /> Quay lại cấu hình
+                  </button>
+                  <button onClick={handleDownloadZip}
+                    className="flex-2 flex items-center justify-center py-4 px-4 rounded-2xl shadow-lg shadow-blue-500/30 text-lg font-extrabold text-white bg-blue-600 hover:bg-blue-700 transition-all hover:-translate-y-1 active:scale-[0.98]">
+                    <Download className="mr-2 h-6 w-6" /> Tải Xuống Bộ Đề (ZIP)
+                  </button>
                 </div>
               </div>
+            )}
+          </div>
+        </div>
+      </main>
 
-              {/* BẢNG BÁO LỖI (NẾU CÓ) */}
-              {validationErrors.length > 0 && (
-                <div className="bg-red-50 p-6 rounded-xl border border-red-200 animate-in fade-in">
-                  <div className="flex items-center mb-4">
-                    <AlertOctagon className="h-6 w-6 text-red-600 mr-2" />
-                    <h3 className="text-lg font-bold text-red-800">Phát hiện {validationErrors.length} lỗi định dạng</h3>
+      {/* FOOTER */}
+      <footer className="w-full py-6 text-center border-t border-slate-200 bg-white mt-auto">
+        <p className="text-sm font-medium text-slate-500">
+          © {new Date().getFullYear()} ExamGen PRO. Hệ thống trộn đề thi trắc nghiệm tiên tiến nhất.
+        </p>
+      </footer>
+
+      {/* MODAL HƯỚNG DẪN */}
+      {isDocsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+           <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50 shrink-0">
+              <h2 className="text-2xl font-extrabold text-slate-800 flex items-center">
+                <BookOpen className="w-6 h-6 mr-3 text-blue-600" /> Tài liệu Đặc tả & Hướng dẫn
+              </h2>
+              <button onClick={() => setIsDocsOpen(false)} className="p-2 hover:bg-slate-200 rounded-full transition-colors">
+                <X className="w-6 h-6 text-slate-500" />
+              </button>
+            </div>
+
+            {/* TAB HEADERS */}
+            <div className="flex border-b border-slate-200 px-6 bg-slate-50 overflow-x-auto custom-scrollbar shrink-0">
+              <button
+                onClick={() => setActiveTab('rules')}
+                className={`py-3 px-4 font-bold text-sm whitespace-nowrap border-b-2 transition-colors ${activeTab === 'rules' ? 'border-blue-600 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+              >
+                <CheckCircle2 className="w-4 h-4 inline-block mr-1.5 mb-0.5" /> Quy tắc & Cấu trúc
+              </button>
+              <button
+                onClick={() => setActiveTab('features')}
+                className={`py-3 px-4 font-bold text-sm whitespace-nowrap border-b-2 transition-colors ${activeTab === 'features' ? 'border-blue-600 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+              >
+                <Sparkles className="w-4 h-4 inline-block mr-1.5 mb-0.5" /> Tính năng Nổi bật
+              </button>
+              <button
+                onClick={() => setActiveTab('limitations')}
+                className={`py-3 px-4 font-bold text-sm whitespace-nowrap border-b-2 transition-colors ${activeTab === 'limitations' ? 'border-red-500 text-red-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+              >
+                <AlertTriangle className="w-4 h-4 inline-block mr-1.5 mb-0.5" /> Hạn chế & Cảnh báo (Red Flags)
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto custom-scrollbar grow bg-white">
+              {/* NỘI DUNG TAB 1: QUY TẮC & CẤU TRÚC */}
+              {activeTab === 'rules' && (
+                <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-800 mb-3">1. Cấu trúc 3 Phần chuẩn Bộ GD 2025</h3>
+                    <div className="space-y-3 text-sm text-slate-700 bg-slate-50 p-4 rounded-xl border border-slate-200 leading-relaxed shadow-sm">
+                      <div><strong className="text-blue-700">Phần I (Trắc nghiệm):</strong> Nhận diện qua từ khóa <code className="bg-white px-1.5 py-0.5 border rounded text-slate-900 font-bold">Câu X.</code> hoặc <code className="bg-white px-1.5 py-0.5 border rounded text-slate-900 font-bold">Question X:</code>. Theo sau là 4 đáp án <code className="bg-white px-1.5 py-0.5 border rounded font-bold">A. B. C. D.</code> (bắt buộc có dấu chấm).</div>
+                      <hr className="border-slate-200" />
+                      <div><strong className="text-blue-700">Phần II (Đúng/Sai):</strong> Các ý <code className="bg-white px-1.5 py-0.5 border rounded text-slate-900 font-bold">a) b) c) d)</code> (bắt buộc đóng ngoặc tròn) nằm dưới mỗi câu.</div>
+                      <hr className="border-slate-200" />
+                      <div><strong className="text-blue-700">Phần III (Trả lời ngắn):</strong> Chỉ gõ duy nhất 1 đáp án đi sau chữ <code className="bg-white px-1.5 py-0.5 border rounded text-slate-900 font-bold">A.</code> (Ví dụ: <code>A. 12,5</code>).</div>
+                    </div>
                   </div>
-                  <ul className="list-disc pl-5 space-y-2 text-sm text-red-700">
-                    {validationErrors.map((err, idx) => (
-                      <li key={idx} className="font-medium leading-relaxed">{err}</li>
-                    ))}
-                  </ul>
-                  <p className="mt-4 text-sm text-red-600 italic">
-                    * Vui lòng mở file Word, sửa lại các vị trí trên và tải lên lại.
-                  </p>
+
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-800 mb-3">2. Cách Đánh Dấu Đáp Án Đúng</h3>
+                    <p className="text-sm text-slate-600 mb-2">Hệ thống nhận diện đáp án đúng qua định dạng của file Word. Bạn phải làm 1 trong 2 cách sau:</p>
+                    <ul className="list-disc pl-5 space-y-2 text-sm text-slate-700 bg-green-50/50 p-4 rounded-xl border border-green-200">
+                      <li><strong className="text-green-800">Bôi màu chữ:</strong> Hỗ trợ các mã màu: <strong>Đỏ</strong> (Red, #FF0000, #C00000, #EE0000), <strong>Xanh lá</strong> (Green, #00B050, #008000), và <strong>Xanh dương</strong> (Blue, #0000FF, #0070C0).</li>
+                      <li><strong className="text-green-800">Gạch chân chữ (Underline):</strong> Bôi đen văn bản đáp án và nhấn <kbd className="bg-white border rounded shadow-sm px-1.5 font-mono text-xs text-slate-600">Ctrl + U</kbd>.</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-800 mb-3">3. Phân Nhóm & Ghim Đáp Án</h3>
+                    <div className="bg-purple-50/50 p-4 rounded-xl border border-purple-200 text-sm text-slate-700 space-y-3">
+                      <p>Dùng thẻ <code className="font-bold text-purple-700 bg-white px-1 border rounded">&lt;gX&gt;</code> đặt ở đầu đoạn văn để cấu hình luật trộn cho các câu bên dưới:</p>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li><code className="font-bold">&lt;g3&gt;</code>: Trộn Full (Hoán vị cả câu hỏi lẫn đáp án). Đây là mặc định.</li>
+                        <li><code className="font-bold">&lt;g2&gt;</code>: Chỉ trộn đáp án, giữ nguyên thứ tự câu (Chuẩn cho bài Đọc hiểu).</li>
+                        <li><code className="font-bold">&lt;g1&gt;</code>: Chỉ trộn câu, giữ nguyên thứ tự A,B,C,D.</li>
+                        <li><code className="font-bold">&lt;g0&gt;</code>: Đóng băng hoàn toàn (Dành cho bài nghe Audio).</li>
+                      </ul>
+                      <p className="pt-2 border-t border-purple-100"><strong className="text-purple-900">Tính năng Ghim:</strong> Đặt dấu <code className="bg-white font-bold px-1.5 py-0.5 rounded border text-red-600">#</code> ngay trước ký tự đáp án (VD: <code>#D. Tất cả đều đúng</code>) để đáp án này không bao giờ bị đổi vị trí.</p>
+                    </div>
+                  </div>
                 </div>
               )}
 
-              <button
-                onClick={handlePreview}
-                disabled={files.length === 0}
-                className={`w-full flex items-center justify-center py-4 px-4 rounded-xl shadow-md text-lg font-bold text-white transition-all 
-                  ${files.length === 0 ? 'bg-slate-300 cursor-not-allowed shadow-none' : 'bg-blue-600 hover:bg-blue-700 active:scale-[0.98]'}`}
-              >
-                <Eye className="mr-2 h-6 w-6" />
-                Kiểm tra File & Xem trước
+              {/* NỘI DUNG TAB 2: TÍNH NĂNG */}
+              {activeTab === 'features' && (
+                <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-blue-50 p-5 rounded-2xl border border-blue-100 hover:shadow-md transition-shadow">
+                      <strong className="block text-blue-900 text-lg mb-2">Smart Layout 4-2-1</strong>
+                      <p className="text-sm text-slate-700 leading-relaxed">Thuật toán tự động đo chiều dài đáp án và dàn trang bằng thẻ Tab chuẩn Word. Giúp xếp 4 đáp án/dòng, 2 đáp án/dòng thẳng tắp, cực kì tiết kiệm giấy.</p>
+                    </div>
+                    <div className="bg-indigo-50 p-5 rounded-2xl border border-indigo-100 hover:shadow-md transition-shadow">
+                      <strong className="block text-indigo-900 text-lg mb-2">Hỗ trợ Nhiều Đề Gốc</strong>
+                      <p className="text-sm text-slate-700 leading-relaxed">Cho phép upload cùng lúc nhiều file gốc. Thuật toán Round-Robin sẽ tự động chia đều số lượng mã đề cần trộn cho từng đề gốc.</p>
+                    </div>
+                    <div className="bg-teal-50 p-5 rounded-2xl border border-teal-100 hover:shadow-md transition-shadow">
+                      <strong className="block text-teal-900 text-lg mb-2">Ma trận Excel Tự Động</strong>
+                      <p className="text-sm text-slate-700 leading-relaxed">Tự động xuất bảng Excel đối chiếu các mã đề cực kì trực quan, tương thích tuyệt đối với các ứng dụng, máy quét chấm thi phổ biến.</p>
+                    </div>
+                    <div className="bg-amber-50 p-5 rounded-2xl border border-amber-100 hover:shadow-md transition-shadow">
+                      <strong className="block text-amber-900 text-lg mb-2">Tàng Hình Header</strong>
+                      <p className="text-sm text-slate-700 leading-relaxed">Tự động chèn bảng Header 2 cột chuẩn form Bộ Giáo Dục, viền vô hình, canh lề hoàn hảo không làm xô lệch bất kỳ dòng chữ nào trong file.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* NỘI DUNG TAB 3: HẠN CHẾ & RED FLAGS */}
+              {activeTab === 'limitations' && (
+                <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
+                  <div className="bg-red-50 p-6 rounded-2xl border border-red-200">
+                    <h3 className="text-red-800 font-bold text-lg mb-3 flex items-center">
+                      <ShieldAlert className="w-5 h-5 mr-2" /> Vùng Cảnh Báo (Red Flags)
+                    </h3>
+                    <p className="text-sm text-red-700 mb-4 leading-relaxed font-medium">
+                      Đây là trình phân tích cấu trúc văn bản XML, do đó nó <strong>rất nhạy cảm với các lỗi định dạng</strong>. Vui lòng tuân thủ tuyệt đối các nguyên tắc sau để tránh lỗi hệ thống:
+                    </p>
+                    <ul className="list-disc pl-5 space-y-3 text-sm text-red-900">
+                      <li>Tuyệt đối không sử dụng <strong>Bảng biểu (Table)</strong>, <strong>Textbox</strong> hoặc <strong>SmartArt</strong> để chứa nội dung câu hỏi hay đáp án. Hệ thống sẽ bỏ qua chúng.</li>
+                      <li>Hình ảnh đính kèm bắt buộc phải được thiết lập ở chế độ <strong>"In line with text"</strong> (Cùng dòng với văn bản).</li>
+                      <li>Tuyệt đối <strong>không được dùng phím Enter</strong> để ngắt dòng giữa chừng bên trong một đáp án. (Nếu đáp án dài, hãy cứ gõ liên tục để Word tự động rớt dòng).</li>
+                      <li>Lỗi đánh số tự động (Auto-Numbering): Đôi khi tính năng Auto-Numbering của Word làm ẩn ký tự A, B, C trong lõi XML. Khuyến cáo nên gõ tay chữ A., B., C., D.</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 border-t border-slate-100 bg-slate-50 text-right">
+              <button onClick={() => setIsDocsOpen(false)} className="px-8 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors shadow-md">
+                Đã hiểu & Đóng lại
               </button>
             </div>
-          )}
-
-          {/* BƯỚC 2: MÀN HÌNH PREVIEW & DOWNLOAD */}
-          {step === 2 && previewData && (
-            <div className="space-y-8 animate-in slide-in-from-right-8 duration-500">
-
-              <div className="bg-green-50 p-4 rounded-xl border border-green-200 flex items-center">
-                <CheckCircle2 className="h-6 w-6 text-green-600 mr-3 shrink-0" />
-                <p className="text-sm text-green-800 font-medium">
-                  File hợp lệ! Dữ liệu đã được bóc tách thành công. Vui lòng kiểm tra lại Ma trận và Cấu trúc đề bên dưới trước khi tải xuống.
-                </p>
-              </div>
-
-              {/* PREVIEW MA TRẬN ĐÁP ÁN */}
-              <div>
-                <h4 className="font-bold text-slate-800 mb-3 flex items-center">
-                  <FileText className="w-5 h-5 mr-2 text-blue-600" /> Ma trận đáp án (Minh họa)
-                </h4>
-                <div className="overflow-x-auto border border-slate-200 rounded-lg shadow-sm">
-                  <table className="min-w-full divide-y divide-slate-200 text-sm text-center">
-                    <thead className="bg-slate-50">
-                      <tr>
-                        <th className="px-4 py-3 font-semibold text-slate-700 border-r border-slate-200">Câu</th>
-                        {previewData.matrix.map((_: any, i: number) => (
-                          <th key={i} className="px-4 py-3 font-semibold text-slate-700">Mã {startCode + i}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-slate-200">
-                      {previewData.matrix[0].slice(0, 10).map((_: any, qIdx: number) => (
-                        <tr key={qIdx} className="hover:bg-slate-50 transition-colors">
-                          <td className="px-4 py-2 font-medium text-slate-900 border-r border-slate-200">Câu {startQuestion + qIdx}</td>
-                          {previewData.matrix.map((examObj: any, eIdx: number) => (
-                            <td key={eIdx} className={`px-4 py-2 font-bold ${examObj[qIdx] === '?' ? 'text-red-500 bg-red-50' : 'text-blue-600'}`}>
-                              {examObj[qIdx]}
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                      {previewData.matrix[0].length > 10 && (
-                        <tr>
-                          <td colSpan={numExams + 1} className="px-4 py-3 text-slate-500 italic bg-slate-50">
-                            ... và {previewData.matrix[0].length - 10} câu nữa (Xem đầy đủ trong file Excel)
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* PREVIEW CẤU TRÚC ĐỀ (TEXT MINH HỌA) */}
-              <div>
-                <h4 className="font-bold text-slate-800 mb-3 flex items-center">
-                  <Eye className="w-5 h-5 mr-2 text-blue-600" /> Cấu trúc Đề thi (Trích đoạn Mã {startCode})
-                </h4>
-                <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 h-64 overflow-y-auto text-sm space-y-6 shadow-inner">
-                  {previewData.previewExam.slice(0, 5).map((q: any, idx: number) => (
-                    <div key={idx} className="space-y-2 pb-4 border-b border-slate-200 last:border-0">
-                      <p className="font-semibold text-slate-800 whitespace-pre-wrap">{q.question}</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-4">
-                        {q.answers.map((ans: string, aIdx: number) => {
-                          const isCorrect = ans.startsWith(q.correctAnswer);
-                          return (
-                            <div key={aIdx} className={`px-3 py-1.5 rounded-md border ${isCorrect ? 'bg-green-100 border-green-300 font-bold text-green-800' : 'bg-white border-slate-200 text-slate-700'}`}>
-                              {ans} {isCorrect && ' ✓'}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                  {previewData.previewExam.length > 5 && (
-                    <div className="text-center text-slate-500 italic pt-2">... còn tiếp ...</div>
-                  )}
-                </div>
-              </div>
-
-              {/* CÁC NÚT ĐIỀU KHIỂN */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                <button
-                  onClick={() => setStep(1)}
-                  className="flex-1 flex items-center justify-center py-3.5 px-4 border border-slate-300 rounded-xl shadow-sm text-base font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-all"
-                >
-                  <RefreshCw className="mr-2 h-5 w-5" />
-                  Sửa cấu hình / Tải file khác
-                </button>
-                <button
-                  onClick={handleDownloadZip}
-                  className="flex-2 flex items-center justify-center py-3.5 px-4 rounded-xl shadow-md text-lg font-bold text-white bg-green-600 hover:bg-green-700 transition-all active:scale-[0.98]"
-                >
-                  <Download className="mr-2 h-6 w-6" />
-                  Xác nhận Trộn & Tải File ZIP
-                </button>
-              </div>
-
-            </div>
-          )}
-
-        </div>
-
-        {/* VÙNG THÔNG TIN QUY TẮC CHI TIẾT */}
-        <div className="bg-white p-8 md:p-10 rounded-2xl shadow-md border border-slate-200 space-y-8">
-          <div className="flex items-center border-b border-slate-100 pb-5">
-            <Info className="h-7 w-7 text-blue-600 mr-3" />
-            <h3 className="text-xl font-bold text-slate-800">Tài liệu Đặc tả & Hướng dẫn làm sạch dữ liệu</h3>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            {/* CỘT 1 */}
-            <div className="space-y-8">
-              <div>
-                <h4 className="flex items-center font-bold text-slate-800 mb-3 text-lg">
-                  <FileWarning className="h-5 w-5 text-amber-500 mr-2" />
-                  Làm sạch dữ liệu ban đầu
-                </h4>
-                <p className="text-sm text-slate-600 bg-amber-50 p-4 rounded-xl border border-amber-100 leading-relaxed">
-                  Loại bỏ toàn bộ Header/Footer của file gốc, chỉ giữ lại nội dung lõi của đề thi để Parser xử lý chính xác nhất.
-                </p>
-              </div>
-
-              <div>
-                <h4 className="flex items-center font-bold text-slate-800 mb-3 text-lg">
-                  <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                  Cấu trúc 3 phần chuẩn 2025
-                </h4>
-                <div className="space-y-4 text-sm text-slate-700 bg-slate-50 p-5 rounded-xl border border-slate-100 leading-relaxed">
-                  <div>
-                    <strong className="text-blue-700">Phần I (Nhiều lựa chọn):</strong> Nhận diện qua <code className="bg-white px-1.5 py-0.5 rounded border">Câu X.</code>, đáp án <code className="bg-white px-1.5 py-0.5 rounded border">A., B., C., D.</code> Gạch chân hoặc bôi đỏ (màu cụ thể) để xác định đáp án đúng.
-                  </div>
-                  <div>
-                    <strong className="text-blue-700">Phần II (Đúng/Sai):</strong> Các ý <code className="bg-white px-1.5 py-0.5 rounded border">a), b), c), d)</code> nằm dưới mỗi câu. Gạch chân để xác định câu đúng. <i>(Lưu ý: Tính năng hoán vị ý a,b,c,d đang cập nhật).</i>
-                  </div>
-                  <div>
-                    <strong className="text-blue-700">Phần III (Trả lời ngắn):</strong> Kết quả đi sau chữ <code className="bg-white px-1.5 py-0.5 rounded border">A.</code> với độ dài tối đa 4 ký tự.
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="flex items-center font-bold text-slate-800 mb-3 text-lg">
-                  <Tags className="h-5 w-5 text-blue-500 mr-2" />
-                  Phân nhóm & Cấu hình trộn (&lt;gX#Y&gt;)
-                </h4>
-                <div className="space-y-4 text-sm text-slate-700 bg-blue-50/50 p-5 rounded-xl border border-blue-100 leading-relaxed">
-                  <p>
-                    <strong className="text-red-600">Tính năng ghim:</strong> Sử dụng dấu <code className="bg-white font-bold px-1.5 py-0.5 rounded border">#</code> trước các lựa chọn không muốn hoán vị (VD: <code className="bg-white px-1.5 py-0.5 rounded border">#C. Cả A và B đều đúng</code>). Thuật toán sẽ loại trừ nó khỏi mảng hoán vị.
-                  </p>
-                  <ul className="space-y-3 mt-3">
-                    <li><span className="font-bold text-blue-700 bg-blue-100 px-2 py-1 rounded">&lt;g3&gt; Trộn Full:</span> Hoán vị cả câu hỏi lẫn đáp án. Khuyến khích format lại thành list đáp án rời (mỗi đáp án 1 dòng).</li>
-                    <li><span className="font-bold text-blue-700 bg-blue-100 px-2 py-1 rounded">&lt;g2&gt; Chỉ trộn đáp án:</span> Giữ nguyên thứ tự câu, chỉ đảo vị trí A, B, C, D. Cực kỳ chuẩn xác cho bài đọc hiểu đục lỗ.</li>
-                    <li><span className="font-bold text-blue-700 bg-blue-100 px-2 py-1 rounded">&lt;g1&gt; Chỉ trộn câu:</span> Giữ nguyên thứ tự A, B, C, D.</li>
-                    <li><span className="font-bold text-blue-700 bg-blue-100 px-2 py-1 rounded">&lt;g0&gt; Đóng băng:</span> Không trộn gì cả. Dành cho bài nghe (phải theo thứ tự audio).</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* CỘT 2 */}
-            <div>
-              <h4 className="flex items-center font-bold text-red-600 mb-4 text-lg">
-                <ShieldAlert className="h-6 w-6 mr-2" />
-                8 "Red Flags" (Lỗi vi phạm định dạng)
-              </h4>
-              <div className="bg-red-50 p-6 rounded-xl border border-red-200 space-y-4">
-                <p className="text-sm text-red-800 font-semibold mb-3">
-                  Cần bóc tách hoặc làm sạch trước khi tải lên. Nếu vi phạm, Parser sẽ bỏ qua hoặc sinh lỗi:
-                </p>
-                <ul className="text-sm text-slate-800 space-y-3.5 leading-relaxed">
-                  <li><strong className="text-red-700">Lỗi 1 (Dữ liệu trong Table):</strong> Dữ liệu phải là text thuần. Các đáp án nằm trong bảng biểu (Table) của Word sẽ làm thuật toán đọc bị lỗi.</li>
-                  <li><strong className="text-red-700">Lỗi 2 (Sai từ khóa Câu):</strong> Cú pháp bắt buộc là <code className="bg-white px-1 border rounded">Câu X.</code> hoặc <code className="bg-white px-1 border rounded">Câu X:</code>. Thiếu dấu câu hoặc chèn thêm ký tự phân loại (VD: Câu 1 (NB):) hệ thống sẽ không nhận diện được.</li>
-                  <li><strong className="text-red-700">Lỗi 3 (Sai từ khóa Đáp án):</strong> Cú pháp bắt buộc là <code className="bg-white px-1 border rounded">A., B., C., D.</code> Thiếu dấu chấm (VD: B) hoặc dư khoảng trắng (VD: D .) đều làm fail thuật toán tách đáp án.</li>
-                  <li><strong className="text-red-700">Lỗi 4 (Thiếu ngắt dòng nội bộ):</strong> Bắt buộc phải có ký tự xuống dòng (Enter) để tách biệt giữa nội dung câu hỏi và khối đáp án.</li>
-                  <li><strong className="text-red-700">Lỗi 5 (Dính dòng giữa các câu):</strong> Bắt buộc phải Enter phân tách giữa đáp án cuối cùng của câu trước và từ khóa của câu sau. (Lỗi ảo ảnh thị giác trên Word).</li>
-                  <li><strong className="text-red-700">Lỗi 6 (Auto-numbering):</strong> Không dùng tính năng đánh số tự động của MS Word. Thuật toán cần đọc các ký tự tĩnh gõ bằng tay.</li>
-                  <li><strong className="text-red-700">Lỗi 7 (Nhận diện nhầm từ khóa):</strong> Các đơn vị như <code className="bg-white px-1 border rounded">A. (Ampe)</code>, đvC. hay tên riêng rất dễ đánh lừa thuật toán. Cách xử lý: Ép xuống dòng hoặc xóa dấu chấm.</li>
-                  <li><strong className="text-red-700">Lỗi 8 (Hình ảnh lộn xộn):</strong> Bắt buộc mọi hình ảnh phải thiết lập chế độ <strong>Inline with Text</strong>. Nếu để floating, mã XML của ảnh sẽ trôi dạt, dẫn đến cắt dán mảng làm bay mất ảnh.</li>
-                </ul>
-              </div>
-            </div>
-
           </div>
         </div>
+      )}
 
-        {/* VÙNG TÓM TẮT NHANH */}
-        <div className="bg-white p-6 md:p-8 rounded-2xl shadow-md border border-slate-200">
-          <div className="flex items-center mb-4">
-            <Info className="h-6 w-6 text-blue-500 mr-2" />
-            <h3 className="text-lg font-bold text-slate-800">Quy tắc Upload & Tính năng</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <h4 className="flex items-center font-semibold text-green-700">
-                <CheckCircle2 className="h-4 w-4 mr-1.5" /> Chuẩn định dạng yêu cầu:
-              </h4>
-              <ul className="text-sm text-slate-600 space-y-2 list-disc pl-5">
-                <li>Bắt đầu câu hỏi bằng <strong>Câu X:</strong> hoặc <strong>Question X:</strong></li>
-                <li>Bắt đầu đáp án bằng <strong>A. B. C. D.</strong></li>
-                <li>Hệ thống <strong>tự động dò đáp án đúng</strong> nếu chữ được bôi màu (Đỏ, Xanh...) hoặc gạch chân.</li>
-                <li>Sử dụng thẻ <strong>&lt;g3&gt;</strong>, <strong>&lt;g3#1&gt;</strong> để nhóm các câu không đảo.</li>
-              </ul>
-            </div>
-            <div className="space-y-4">
-              <h4 className="flex items-center font-semibold text-amber-600">
-                <AlertTriangle className="h-4 w-4 mr-1.5" /> Lưu ý & Hạn chế hiện tại:
-              </h4>
-              <ul className="text-sm text-slate-600 space-y-2 list-disc pl-5">
-                <li><span className="font-medium">Nhiều đáp án trên 1 dòng:</span> Hệ thống sẽ <strong>bỏ qua việc hoán đổi A,B,C,D</strong> ở câu này để bảo vệ định dạng Tab và công thức. (Vị trí câu hỏi vẫn bị hoán đổi).</li>
-                <li><span className="font-medium">Table (Bảng):</span> Không hỗ trợ đọc đáp án nếu bạn đưa A, B, C, D vào trong cấu trúc Table.</li>
-                <li><span className="font-medium">Hình ảnh bị trôi:</span> Nhớ bấm phím Enter để hình ảnh nằm riêng một dòng độc lập với chữ.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </main>
+    </div>
   );
 }
