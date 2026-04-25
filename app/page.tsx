@@ -9,7 +9,8 @@ export default function ExamGenerator() {
   const [startCode, setStartCode] = useState(101);
   const [startQuestion, setStartQuestion] = useState(1);
 
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [useHeader, setUseHeader] = useState(true);
+  const [useFooter, setUseFooter] = useState(true);
   const [department, setDepartment] = useState('SỞ GD&ĐT...');
   const [school, setSchool] = useState('TRƯỜNG THPT...');
   const [examName, setExamName] = useState('KIỂM TRA CUỐI KÌ I');
@@ -95,6 +96,8 @@ export default function ExamGenerator() {
     formData.append('startCode', startCode.toString());
     formData.append('startQuestion', startQuestion.toString());
 
+    formData.append('useHeader', useHeader.toString());
+    formData.append('useFooter', useFooter.toString());
     formData.append('department', department);
     formData.append('school', school);
     formData.append('examName', examName);
@@ -179,20 +182,33 @@ export default function ExamGenerator() {
                 </div>
               </div>
 
-              {/* Vùng Cấu hình Header (Accordion) */}
-              <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
-                <button
-                  onClick={() => setShowAdvanced(!showAdvanced)}
-                  className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-blue-50 transition-colors focus:outline-none"
-                >
-                  <span className="font-semibold text-slate-700 text-sm flex items-center">
-                    <FileText className="w-4 h-4 mr-2 text-blue-600" />
-                    Cấu hình Tiêu đề File (Tùy chọn)
-                  </span>
-                  {showAdvanced ? <ChevronUp className="w-5 h-5 text-slate-500" /> : <ChevronDown className="w-5 h-5 text-slate-500" />}
-                </button>
+              {/* VÙNG CẤU HÌNH HEADER & FOOTER (TOGGLE SWITCHES) */}
+              <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm transition-all duration-300">
+                <div className="p-4 bg-slate-50 border-b border-slate-100 flex flex-col sm:flex-row gap-6 justify-between">
+                  <label className="flex items-center cursor-pointer select-none">
+                    <div className="relative">
+                      <input type="checkbox" className="sr-only" checked={useHeader} onChange={() => setUseHeader(!useHeader)} />
+                      <div className={`block w-11 h-6 rounded-full transition-colors ${useHeader ? 'bg-blue-600' : 'bg-slate-300'}`}></div>
+                      <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${useHeader ? 'transform translate-x-5' : ''}`}></div>
+                    </div>
+                    <span className="ml-3 font-semibold text-slate-700 text-sm flex items-center">
+                      <FileText className="w-4 h-4 mr-2 text-blue-600" /> Bổ sung Header (Sở, Trường, Mã đề...)
+                    </span>
+                  </label>
 
-                {showAdvanced && (
+                  <label className="flex items-center cursor-pointer select-none">
+                    <div className="relative">
+                      <input type="checkbox" className="sr-only" checked={useFooter} onChange={() => setUseFooter(!useFooter)} />
+                      <div className={`block w-11 h-6 rounded-full transition-colors ${useFooter ? 'bg-blue-600' : 'bg-slate-300'}`}></div>
+                      <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${useFooter ? 'transform translate-x-5' : ''}`}></div>
+                    </div>
+                    <span className="ml-3 font-semibold text-slate-700 text-sm flex items-center">
+                      <FileText className="w-4 h-4 mr-2 text-blue-600" /> Bổ sung Footer (HẾT)
+                    </span>
+                  </label>
+                </div>
+
+                {useHeader && (
                   <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white border-t border-slate-200 animate-in slide-in-from-top-2">
                     {/* Hàng 1 */}
                     <div>
