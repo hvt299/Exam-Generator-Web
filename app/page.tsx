@@ -23,6 +23,10 @@ export default function ExamGenerator() {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [previewData, setPreviewData] = useState<any>(null);
 
+  const [showAllErrors, setShowAllErrors] = useState(false);
+  const [matrixPage, setMatrixPage] = useState(0);
+  const rowsPerPage = 10;
+
   const [isDocsOpen, setIsDocsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'rules' | 'features' | 'limitations'>('rules');
 
@@ -284,17 +288,47 @@ export default function ExamGenerator() {
                   </div>
                 </div>
 
+                {/* HIỂN THỊ LỖI DẠNG CARD (CÓ THU GỌN) */}
                 {validationErrors.length > 0 && (
                   <div className="bg-red-50/80 p-6 rounded-2xl border border-red-200 animate-in fade-in">
-                    <div className="flex items-center mb-4">
-                      <AlertOctagon className="h-6 w-6 text-red-600 mr-2" />
-                      <h3 className="text-lg font-bold text-red-800">Cần sửa {validationErrors.length} lỗi trong file gốc</h3>
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="flex items-center">
+                        <div className="bg-red-100 p-2 rounded-full mr-3">
+                          <AlertOctagon className="h-6 w-6 text-red-600" />
+                        </div>
+                        <h3 className="text-xl font-extrabold text-red-800 tracking-tight">Phát hiện {validationErrors.length} lỗi</h3>
+                      </div>
+
+                      {validationErrors.length > 4 && (
+                        <button
+                          onClick={() => setShowAllErrors(!showAllErrors)}
+                          className="text-sm font-bold text-red-600 hover:text-red-700 bg-white px-4 py-2 rounded-lg border border-red-200 shadow-sm transition-all"
+                        >
+                          {showAllErrors ? 'Thu gọn bớt' : `Xem tất cả ${validationErrors.length} lỗi ⬇️`}
+                        </button>
+                      )}
                     </div>
-                    <ul className="list-disc pl-5 space-y-2.5 text-sm text-red-700">
-                      {validationErrors.map((err, idx) => (
-                        <li key={idx} className="font-medium leading-relaxed">{err}</li>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {(showAllErrors ? validationErrors : validationErrors.slice(0, 4)).map((err: any, idx) => (
+                        <div key={idx} className="bg-white rounded-xl border border-red-100 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow animate-in zoom-in-95 duration-200">
+                          <div className="px-4 py-3 bg-red-50/50 border-b border-red-100 flex items-start">
+                            <span className="bg-red-100 text-red-700 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded mr-3 mt-0.5 whitespace-nowrap">{err.file}</span>
+                            <p className="text-sm font-bold text-slate-800 line-clamp-2 leading-relaxed">{err.location}</p>
+                          </div>
+                          <div className="p-4 flex flex-col gap-3 grow">
+                            <p className="text-sm font-semibold text-red-600">{err.message}</p>
+                            <div className="bg-blue-50/70 p-3.5 rounded-xl flex items-start border border-blue-100/50 mt-auto">
+                              <span className="text-lg mr-2.5 mt-0.5">💡</span>
+                              <div>
+                                <span className="block text-[11px] font-extrabold text-blue-800 mb-1 uppercase tracking-wider">Cách khắc phục</span>
+                                <p className="text-sm text-blue-900/90 font-medium leading-relaxed">{err.suggestion}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 )}
 
@@ -317,11 +351,38 @@ export default function ExamGenerator() {
                   </p>
                 </div>
 
+                {/* MA TRẬN ĐÁP ÁN CÓ PHÂN TRANG */}
                 <div>
-                  <h4 className="font-bold text-slate-800 mb-4 flex items-center text-lg">
-                    <FileText className="w-5 h-5 mr-2 text-blue-600" /> Trích xuất Ma trận (Mô phỏng)
-                  </h4>
-                  <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-sm">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-5 h-5 text-blue-600" />
+                      <h4 className="font-bold text-slate-800 text-lg">Ma trận đáp án ({numExams} mã đề đầu)</h4>
+                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold uppercase">Bản mô phỏng</span>
+                    </div>
+
+                    {/* Bộ lọc/Phân trang */}
+                    <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl">
+                      <button
+                        disabled={matrixPage === 0}
+                        onClick={() => setMatrixPage(p => p - 1)}
+                        className="p-2 rounded-lg hover:bg-white hover:shadow-sm disabled:opacity-30 transition-all"
+                      >
+                        <RefreshCw className="w-4 h-4 rotate-180" />
+                      </button>
+                      <span className="text-xs font-extrabold text-slate-600 px-2">
+                        TRANG {matrixPage + 1} / {Math.ceil(previewData.matrix[0].length / rowsPerPage)}
+                      </span>
+                      <button
+                        disabled={(matrixPage + 1) * rowsPerPage >= previewData.matrix[0].length}
+                        onClick={() => setMatrixPage(p => p + 1)}
+                        className="p-2 rounded-lg hover:bg-white hover:shadow-sm disabled:opacity-30 transition-all"
+                      >
+                        <RefreshCw className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-sm bg-white">
                     <table className="min-w-full divide-y divide-slate-200 text-sm text-center">
                       <thead className="bg-slate-50/80">
                         <tr>
@@ -331,26 +392,48 @@ export default function ExamGenerator() {
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="bg-white divide-y divide-slate-100">
-                        {previewData.matrix[0].slice(0, 10).map((_: any, qIdx: number) => (
-                          <tr key={qIdx} className="hover:bg-blue-50/50 transition-colors">
-                            <td className="px-4 py-3 font-semibold text-slate-600 border-r border-slate-200">{startQuestion + qIdx}</td>
-                            {previewData.matrix.map((examObj: any, eIdx: number) => (
-                              <td key={eIdx} className={`px-4 py-3 font-bold ${examObj[qIdx] === '?' ? 'text-red-500' : 'text-blue-700'}`}>
-                                {examObj[qIdx]}
-                              </td>
-                            ))}
-                          </tr>
-                        ))}
-                        {previewData.matrix[0].length > 10 && (
-                          <tr>
-                            <td colSpan={numExams + 1} className="px-4 py-4 text-slate-400 font-medium bg-slate-50">
-                              ... ({previewData.matrix[0].length - 10} câu còn lại xem chi tiết trong file Excel)
-                            </td>
-                          </tr>
-                        )}
+                      <tbody className="divide-y divide-slate-100">
+                        {previewData.matrix[0].slice(matrixPage * rowsPerPage, (matrixPage + 1) * rowsPerPage).map((_: any, relativeIdx: number) => {
+                          const qIdx = matrixPage * rowsPerPage + relativeIdx;
+                          return (
+                            <tr key={qIdx} className="hover:bg-blue-50/30 transition-colors">
+                              <td className="px-4 py-3 font-semibold text-slate-600 border-r border-slate-200">{startQuestion + qIdx}</td>
+                              {previewData.matrix.map((examObj: any, eIdx: number) => (
+                                <td key={eIdx} className={`px-4 py-3 font-bold ${examObj[qIdx] === '?' ? 'text-red-500' : 'text-blue-700'}`}>
+                                  {examObj[qIdx]}
+                                </td>
+                              ))}
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
+                  </div>
+                </div>
+
+                {/* XEM TRƯỚC NỘI DUNG MỘT MÃ ĐỀ ĐẠI DIỆN */}
+                <div className="mt-10 pt-10 border-t border-slate-100">
+                  <div className="flex items-center gap-2 mb-6">
+                    <Eye className="w-5 h-5 text-blue-600" />
+                    <h4 className="font-bold text-slate-800 text-lg">Xem trước nội dung chi tiết (Mã đề {startCode})</h4>
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold uppercase">Bản mô phỏng</span>
+                  </div>
+
+                  <div className="space-y-6 max-h-125 overflow-y-auto pr-4 custom-scrollbar bg-slate-50/50 p-6 rounded-3xl border border-slate-200">
+                    {previewData.previewExam.map((q: any, i: number) => (
+                      <div key={i} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <p className="font-bold text-slate-900 mb-3 leading-relaxed">{q.question}</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {q.answers.map((ans: string, aIdx: number) => (
+                            <div key={aIdx} className={`text-sm p-2.5 rounded-lg border ${ans.startsWith(q.correctAnswer) ? 'bg-green-50 border-green-200 text-green-800 font-bold' : 'bg-slate-50 border-slate-100 text-slate-600'}`}>
+                              {ans}
+                            </div>
+                          ))}
+                        </div>
+                        {/* Hiển thị đáp án đúng cho câu tự luận/phần III nếu có */}
+                        {q.answers.length === 0 && <p className="text-sm font-bold text-blue-700 mt-2">Đáp án: {q.correctAnswer}</p>}
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -381,7 +464,7 @@ export default function ExamGenerator() {
       {isDocsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in">
           <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
-           <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50 shrink-0">
+            <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50 shrink-0">
               <h2 className="text-2xl font-extrabold text-slate-800 flex items-center">
                 <BookOpen className="w-6 h-6 mr-3 text-blue-600" /> Tài liệu Đặc tả & Hướng dẫn
               </h2>
