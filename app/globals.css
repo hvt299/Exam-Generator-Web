@@ -78,7 +78,7 @@
   --info-border: #0369a1;
 }
 
-html {
+html[data-scroll-behavior="smooth"] {
   scroll-behavior: smooth;
 }
 
