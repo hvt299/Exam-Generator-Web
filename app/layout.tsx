@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" suppressHydrationWarning className={beVietnamPro.variable}>
+    <html lang="vi" suppressHydrationWarning className={beVietnamPro.variable} data-scroll-behavior="smooth">
       <head>
         <script
           dangerouslySetInnerHTML={{
