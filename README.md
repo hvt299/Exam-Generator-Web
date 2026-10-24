@@ -1,6 +1,6 @@
 <div align="center">
 
-  <h1>📝 ExamGen PRO - Smart Exam Generator Web</h1>
+  <h1>ExamGen PRO - Smart Exam Generator Web</h1>
   <h3>Hệ thống Trộn Đề Thi Trắc Nghiệm Thông Minh Chuẩn Bộ GD&ĐT 2025</h3>
 
   <p>
@@ -9,7 +9,7 @@
   </p>
 
   <p>
-    <img src="https://img.shields.io/badge/Next.js-16.2.6-black?logo=next.js" alt="Next.js">
+    <img src="https://img.shields.io/badge/Next.js-16.4.3-black?logo=next.js" alt="Next.js">
     <img src="https://img.shields.io/badge/React-19.2.6-blue?logo=react" alt="React">
     <img src="https://img.shields.io/badge/TailwindCSS-v4-38bdf8?logo=tailwindcss" alt="Tailwind CSS">
     <img src="https://img.shields.io/badge/license-UNLICENSED-red" alt="License">
@@ -20,27 +20,53 @@
 
 <br />
 
-# 💻 FRONTEND USER DASHBOARD & WORKSPACE
+# FRONTEND USER DASHBOARD & WORKSPACE
 
 Đây là Repository chứa mã nguồn **Frontend** của dự án **ExamGen PRO**, cung cấp giao diện trực quan, thẩm mỹ cao và trải nghiệm người dùng tối ưu dành cho giáo viên trên mọi thiết bị.
 
 ---
 
-## 🛠️ Công nghệ & Phiên bản
+## Mục lục
+
+- [1. Công nghệ & Phiên bản](#1-công-nghệ--phiên-bản)
+  - [Core Stack](#core-stack)
+  - [UI, Typography & Animation](#ui-typography--animation)
+  - [Networking & Data Communication](#networking--data-communication)
+- [2. Tính năng Giao diện Nổi bật](#2-tính-năng-giao-diện-nổi-bật)
+  - [2.1. Trang Chủ Giới Thiệu (Landing Page - `/`)](#21-trang-chủ-giới-thiệu-landing-page---)
+  - [2.2. Không Gian Trộn Đề Tinh Gọn (Wizard 3 Bước - `/generator`)](#22-không-gian-trộn-đề-tinh-gọn-wizard-3-bước---generator)
+  - [2.3. Tài Liệu Đặc Tả & Hướng Dẫn Soạn Thảo (`/docs`)](#23-tài-liệu-đặc-tả--hướng-dẫn-soạn-thảo-docs)
+- [3. Demo Giao diện](#3-demo-giao-diện)
+  - [3.1. Trang Chủ Giới Thiệu (Landing Page)](#31-trang-chủ-giới-thiệu-landing-page)
+  - [3.2. Không Gian Trộn Đề (3-Step Wizard)](#32-không-gian-trộn-đề-3-step-wizard)
+  - [3.3. Ma Trận Đáp Án & Đề Thi Mô Phỏng](#33-ma-trận-đáp-án--đề-thi-mô-phỏng)
+  - [3.4. Tài Liệu Hướng Dẫn & Quy Chuẩn Bộ GD 2025](#34-tài-liệu-hướng-dẫn--quy-chuẩn-bộ-gd-2025)
+- [4. Cài đặt & Khởi chạy](#4-cài-đặt--khởi-chạy)
+  - [4.1. Yêu cầu hệ thống (Prerequisites)](#41-yêu-cầu-hệ-thống-prerequisites)
+  - [4.2. Clone Repository & Cài đặt Dependencies](#42-clone-repository--cài-đặt-dependencies)
+  - [4.3. Cấu hình biến môi trường (.env)](#43-cấu-hình-biến-môi-trường-env)
+  - [4.4. Các lệnh thực thi (NPM Scripts)](#44-các-lệnh-thực-thi-npm-scripts)
+- [5. Cấu trúc Thư mục Dự án](#5-cấu-trúc-thư-mục-dự-án)
+- [6. Kết nối Backend](#6-kết-nối-backend)
+- [7. Tác giả](#7-tác-giả)
+
+---
+
+## 1. Công nghệ & Phiên bản
 
 Dự án được xây dựng trên nền tảng công nghệ mới nhất của hệ sinh thái React / Next.js:
 
-### 🏗️ Core Stack
+### Core Stack
 
 | Công nghệ | Phiên bản | Vai trò |
 | :--- | :--- | :--- |
-| **[Next.js](https://nextjs.org/)** | `16.2.6` | Framework React App Router, Server Components, tối ưu hóa Turbopack |
+| **[Next.js](https://nextjs.org/)** | `16.4.3` | Framework React App Router, Server Components, tối ưu hóa Turbopack |
 | **[React](https://react.dev/)** | `19.2.6` | Thư viện UI cốt lõi phiên bản React 19 mới nhất |
 | **[react-dom](https://react.dev/learn/rendering-elements)** | `19.2.6` | Trình kết xuất DOM cho React 19 |
 
 ---
 
-### 🎨 UI, Typography & Animation
+### UI, Typography & Animation
 
 | Công nghệ | Phiên bản | Vai trò |
 | :--- | :--- | :--- |
@@ -52,7 +78,7 @@ Dự án được xây dựng trên nền tảng công nghệ mới nhất của
 
 ---
 
-### 🌐 Networking & Data Communication
+### Networking & Data Communication
 
 | Công nghệ | Cơ chế | Vai trò |
 | :--- | :--- | :--- |
@@ -61,15 +87,15 @@ Dự án được xây dựng trên nền tảng công nghệ mới nhất của
 
 ---
 
-## 🌟 Tính năng Giao diện Nổi bật
+## 2. Tính năng Giao diện Nổi bật
 
-### 1️⃣ Trang Chủ Giới Thiệu (Landing Page - `/`)
+### 2.1. Trang Chủ Giới Thiệu (Landing Page - `/`)
 * **Huy hiệu Hero Badge sinh động:** Thiết kế phân tầng thông tin (Bộ GD&ĐT / Chính thức / Chuẩn 2025), tích hợp hiệu ứng quầng sáng Halo, hạt bụi trôi và vệt sáng quét ngang toàn màn hình.
 * **Quy trình 3 bước trực quan:** Minh họa sinh động quá trình tạo đề thi chuẩn mực.
 * **Lưới tính năng tiên tiến:** Trình bày chi tiết công nghệ Smart Layout 4-2-1, Round-Robin nhiều đề gốc, bảng ma trận Excel và tiêu đề tàng hình.
 * **Tóm tắt quy ước & Cảnh báo Red Flags:** Giúp giáo viên nhanh chóng nắm bắt các quy tắc chuẩn hóa file Word.
 
-### 2️⃣ Không Gian Trộn Đề Tinh Gọn (Wizard 3 Bước - `/generator`)
+### 2.2. Không Gian Trộn Đề Tinh Gọn (Wizard 3 Bước - `/generator`)
 * **Bước 1 — Nạp đề gốc:** Khu vực kéo thả (Drag & Drop) thông minh, hiển thị danh sách các đề đã nạp, hỗ trợ xóa từng file hoặc bổ sung file linh hoạt.
 * **Bước 2 — Cấu hình thông số & Tiêu đề:**
   * Bộ tham số hoán vị (Số lượng đề con kèm nút chọn nhanh `2`, `4`, `8`, `12` đề; Mã bắt đầu; Câu bắt đầu).
@@ -81,7 +107,7 @@ Dự án được xây dựng trên nền tảng công nghệ mới nhất của
   * Xem trước nội dung chi tiết mã đề đại diện (đáp án đúng được tô màu xanh lá chuẩn).
   * Tải trọn bộ file nén `.zip` chứa toàn bộ đề thi Word và file Excel ma trận.
 
-### 3️⃣ Tài Liệu Đặc Tả & Hướng Dẫn Soạn Thảo (`/docs`)
+### 2.3. Tài Liệu Đặc Tả & Hướng Dẫn Soạn Thảo (`/docs`)
 * **Tab 1 — Cấu trúc 3 Phần chuẩn Bộ 2025:** Hướng dẫn định dạng Phần I (Trắc nghiệm 4 lựa chọn), Phần II (Đúng/Sai 4 ý a-b-c-d), Phần III (Trả lời ngắn).
 * **Tab 2 — Cách đánh dấu đáp án đúng:** Hướng dẫn bôi màu chữ (Đỏ, Xanh lá, Xanh dương) hoặc gạch chân (`Ctrl + U`).
 * **Tab 3 — Phân nhóm `<g0>` - `<g3>` & Ghim `#`:** Khóa câu đọc hiểu, bài nghe hoặc ghim cố định đáp án *"Tất cả đều đúng"*.
@@ -89,30 +115,30 @@ Dự án được xây dựng trên nền tảng công nghệ mới nhất của
 
 ---
 
-## 📸 Demo Giao diện
+## 3. Demo Giao diện
 
-### 1. Trang Chủ Giới Thiệu (Landing Page)
+### 3.1. Trang Chủ Giới Thiệu (Landing Page)
 ![Landing Page](public/demo/landing.png)
 
-### 2. Không Gian Trộn Đề (3-Step Wizard)
+### 3.2. Không Gian Trộn Đề (3-Step Wizard)
 ![Trộn đề thi](public/demo/generator.png)
 
-### 3. Ma Trận Đáp Án & Đề Thi Mô Phỏng
+### 3.3. Ma Trận Đáp Án & Đề Thi Mô Phỏng
 ![Ma trận đáp án](public/demo/matrix-preview.png)
 
-### 4. Tài Liệu Hướng Dẫn & Quy Chuẩn Bộ GD 2025
+### 3.4. Tài Liệu Hướng Dẫn & Quy Chuẩn Bộ GD 2025
 ![Tài liệu hướng dẫn](public/demo/docs.png)
 
 ---
 
-## 🚀 Cài đặt & Khởi chạy
+## 4. Cài đặt & Khởi chạy
 
-### 1️⃣ Yêu cầu hệ thống (Prerequisites)
+### 4.1. Yêu cầu hệ thống (Prerequisites)
 
 * **Node.js:** `>= 18.18.0` (Khuyến nghị **Node.js 20.x** hoặc **22.x LTS**)
 * **Package Manager:** `npm` (>= 9), `yarn`, `pnpm` hoặc `bun`
 
-### 2️⃣ Clone Repository & Cài đặt Dependencies
+### 4.2. Clone Repository & Cài đặt Dependencies
 
 ```bash
 git clone https://github.com/hvt299/Exam-Generator-Web.git
@@ -120,7 +146,7 @@ cd Exam-Generator-Web
 npm install
 ```
 
-### 3️⃣ Cấu hình biến môi trường (.env)
+### 4.3. Cấu hình biến môi trường (.env)
 
 Tạo file `.env` hoặc `.env.local` tại thư mục gốc của dự án:
 
@@ -131,7 +157,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 
 > **Lưu ý:** Nếu chạy môi trường Production, thay đổi `NEXT_PUBLIC_API_URL` thành địa chỉ server backend đã deploy của bạn.
 
-### 4️⃣ Các lệnh thực thi (NPM Scripts)
+### 4.4. Các lệnh thực thi (NPM Scripts)
 
 ```bash
 # Khởi chạy môi trường phát triển (Dev Server tại port 3000 với Turbopack)
@@ -154,7 +180,7 @@ http://localhost:3000
 
 ---
 
-## 📂 Cấu trúc Thư mục Dự án
+## 5. Cấu trúc Thư mục Dự án
 
 ```text
 Exam-Generator-Web/
@@ -181,7 +207,7 @@ Exam-Generator-Web/
 
 ---
 
-## 🔗 Kết nối Backend
+## 6. Kết nối Backend
 
 Frontend này hoạt động tương tác với **ExamGen PRO Backend API** (mặc định tại cổng `3001`):
 * `POST /api/v1/exams/preview`: Phân tích bóc tách đề thi, trả về ma trận đối chiếu và danh sách câu hỏi mô phỏng.
@@ -189,7 +215,7 @@ Frontend này hoạt động tương tác với **ExamGen PRO Backend API** (m�
 
 ---
 
-## 👨‍💻 Tác giả
+## 7. Tác giả
 
 Phát triển bởi **Mr.T (hvt299)**  
 GitHub: [https://github.com/hvt299](https://github.com/hvt299)
