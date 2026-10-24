@@ -9,10 +9,12 @@
   </p>
 
   <p>
-    <img src="https://img.shields.io/badge/Next.js-16.4.3-black?logo=next.js" alt="Next.js">
-    <img src="https://img.shields.io/badge/React-19.2.6-blue?logo=react" alt="React">
-    <img src="https://img.shields.io/badge/TailwindCSS-v4-38bdf8?logo=tailwindcss" alt="Tailwind CSS">
-    <img src="https://img.shields.io/badge/license-UNLICENSED-red" alt="License">
+    <img src="https://img.shields.io/badge/Next.js-16.4.3-black?logo=next.js&logoColor=white" alt="Next.js">
+    <img src="https://img.shields.io/badge/React-19.2.6-61DAFB?logo=react&logoColor=black" alt="React 19">
+    <img src="https://img.shields.io/badge/TailwindCSS-v4-38bdf8?logo=tailwindcss&logoColor=white" alt="Tailwind CSS v4">
+    <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
+    <img src="https://img.shields.io/badge/Framer_Motion-v14.0-0055FF?logo=framer&logoColor=white" alt="Framer Motion">
+    <img src="https://img.shields.io/badge/Lucide_Icons-v0.575-F56565?logo=lucide&logoColor=white" alt="Lucide Icons">
     <img src="https://img.shields.io/badge/status-Active_Development-success" alt="Status">
   </p>
 
