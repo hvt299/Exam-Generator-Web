@@ -20,7 +20,10 @@ import {
   FileStack,
   Check,
   XCircle,
-  HelpCircle
+  HelpCircle,
+  Image as ImageIcon,
+  ListOrdered,
+  Scissors
 } from 'lucide-react';
 
 function DocsContent() {
@@ -51,10 +54,10 @@ function DocsContent() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Tài liệu Đặc tả &amp; Hướng dẫn Soạn thảo
+              Tài liệu Đặc tả &amp; Hướng dẫn Soạn thảo Đề thi 2025
             </h1>
             <p className="text-slate-600 dark:text-slate-400 text-sm mt-1">
-              Quy chuẩn kỹ thuật cấu trúc đề thi Word và các khuyến nghị giúp thuật toán bóc tách dữ liệu chính xác 100%.
+              Quy chuẩn cấu trúc đề kiểm tra Bộ GD&amp;ĐT 2025, hướng dẫn phân nhóm hoán vị và cách khắc phục 8 lỗi thường gặp.
             </p>
           </div>
 
@@ -78,7 +81,7 @@ function DocsContent() {
             }`}
           >
             <CheckCircle2 className="w-4 h-4" />
-            <span>1. Quy tắc &amp; Cấu trúc Đề thi</span>
+            <span>1. Quy trình Soạn thảo (3 Bước)</span>
           </button>
 
           <button
@@ -102,127 +105,131 @@ function DocsContent() {
             }`}
           >
             <AlertTriangle className="w-4 h-4" />
-            <span>3. Hạn chế &amp; Cảnh báo (Red Flags)</span>
+            <span>3. Khắc phục 8 Lỗi Thường Gặp</span>
           </button>
         </div>
 
         {/* TAB 1: QUY TẮC & CẤU TRÚC */}
         {activeTab === 'rules' && (
           <div className="space-y-8 animate-in fade-in duration-200">
-            {/* 1. Cấu trúc 3 Phần */}
+            {/* BƯỚC 1: CHUẨN BỊ NỘI DUNG */}
             <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2.5">
-                <FileStack className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                <span>1. Cấu trúc 3 Phần chuẩn Bộ GD&ĐT 2025</span>
+                <Scissors className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <span>Bước 1. Chuẩn bị nội dung đề thi gốc</span>
               </h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                Đề thi mới phân chia làm 3 phần độc lập, máy quét và phần mềm phân tích dựa theo cấu trúc cú pháp nhận diện:
+                Hãy <strong>xóa phần đầu</strong> (tiêu đề Sở, Trường, Kỳ thi, khung thông tin thí sinh) và <strong>phần cuối</strong> (chữ ký giáo viên, ghi chú), bạn chỉ để lại nội dung đề thi bắt đầu từ câu hỏi đầu tiên. Hệ thống sẽ tự động khởi tạo lại khung tiêu đề trường và chân trang chuẩn quy cách.
               </p>
-
-              <div className="space-y-3 text-sm">
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-blue-600 dark:text-blue-400">PHẦN I - Trắc nghiệm nhiều lựa chọn</span>
-                    <span className="text-[10px] bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold px-2 py-0.5 rounded">4 đáp án</span>
-                  </div>
-                  <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
-                    Nhận diện qua từ khóa bắt đầu: <code className="bg-white dark:bg-slate-900 px-1.5 py-0.5 border border-slate-200 dark:border-slate-700 rounded font-bold text-slate-900 dark:text-white">Câu X.</code> hoặc <code className="bg-white dark:bg-slate-900 px-1.5 py-0.5 border border-slate-200 dark:border-slate-700 rounded font-bold text-slate-900 dark:text-white">Question X:</code>. Theo sau là 4 phương án <code className="bg-white dark:bg-slate-900 px-1.5 py-0.5 border border-slate-200 dark:border-slate-700 rounded font-bold text-blue-600 dark:text-blue-400">A. B. C. D.</code> (bắt buộc có dấu chấm ngay sau chữ cái).
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-blue-600 dark:text-blue-400">PHẦN II - Trắc nghiệm Đúng / Sai</span>
-                    <span className="text-[10px] bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold px-2 py-0.5 rounded">4 ý a-b-c-d</span>
-                  </div>
-                  <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
-                    Mỗi câu hỏi có 4 phát biểu con đánh dấu bằng chữ thường và đóng ngoặc đơn: <code className="bg-white dark:bg-slate-900 px-1.5 py-0.5 border border-slate-200 dark:border-slate-700 rounded font-bold text-blue-600 dark:text-blue-400">a) b) c) d)</code> nằm phía dưới thân câu hỏi.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-blue-600 dark:text-blue-400">PHẦN III - Trả lời ngắn / Tự luận điền số</span>
-                    <span className="text-[10px] bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold px-2 py-0.5 rounded">1 kết quả</span>
-                  </div>
-                  <p className="text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
-                    Thí sinh tự điền đáp số vào phiếu trả lời. Trong file Word gốc, giáo viên gõ duy nhất 1 đáp án chuẩn đi sau tiền tố <code className="bg-white dark:bg-slate-900 px-1.5 py-0.5 border border-slate-200 dark:border-slate-700 rounded font-bold text-blue-600 dark:text-blue-400">A.</code> (Ví dụ: <code className="bg-white dark:bg-slate-900 px-1.5 py-0.5 border border-slate-200 dark:border-slate-700 rounded">A. 12,5</code>).
-                  </p>
-                </div>
-              </div>
             </div>
 
-            {/* 2. Cách Đánh Dấu Đáp Án Đúng */}
+            {/* BƯỚC 2: SOẠN CẤU TRÚC 4 PHẦN */}
             <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2.5">
-                <Palette className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                <span>2. Cách Đánh Dấu Đáp Án Đúng trong File Word</span>
+                <FileStack className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <span>Bước 2. Soạn nội dung đề thi gốc theo cấu trúc Bộ GD&amp;ĐT 2025</span>
               </h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                Hệ thống nhận diện đáp án đúng thông qua thuộc tính định dạng XML trong file .docx. Quý thầy cô có thể sử dụng 1 trong 2 phương án sau:
+                Đề kiểm tra chuẩn 2025 phân định rõ ràng các phần. Hệ thống đảm bảo <strong>các phần luôn theo trình tự từ I &rarr; II &rarr; III &rarr; IV</strong> và không bao giờ xáo trộn câu hỏi giữa các phần với nhau:
               </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60">
-                  <span className="font-bold text-emerald-800 dark:text-emerald-300 text-sm block mb-2">
-                    Cách 1: Bôi màu ký tự (Font Color)
-                  </span>
-                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                    Hỗ trợ 3 gam màu chuẩn:
-                  </p>
-                  <ul className="list-disc pl-5 mt-2 space-y-1 text-xs text-slate-700 dark:text-slate-300">
-                    <li><strong>Màu Đỏ:</strong> Red, #FF0000, #C00000, #EE0000</li>
-                    <li><strong>Màu Xanh lá cây:</strong> Green, #00B050, #008000</li>
-                    <li><strong>Màu Xanh dương:</strong> Blue, #0000FF, #0070C0</li>
+              <div className="space-y-4 text-sm">
+                {/* Phần I */}
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-bold text-blue-600 dark:text-blue-400 text-base">PHẦN I. Trắc nghiệm 4 lựa chọn (A, B, C, D)</span>
+                    <span className="text-[10px] bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold px-2 py-0.5 rounded">Chọn 1 đáp án đúng</span>
+                  </div>
+                  <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                    <li>Câu hỏi bắt đầu bằng: <code className="font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-1 rounded">Câu 1.</code>, <code className="font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-1 rounded">Câu 2:</code> hoặc <code className="font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-1 rounded">Question 1.</code></li>
+                    <li>Phải <strong>xuống dòng (Enter)</strong> trước khi gõ các đáp án và trước khi bắt đầu câu tiếp theo.</li>
+                    <li>Các đáp án bắt đầu bằng: <code className="font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-900 px-1 rounded">A.</code>, <code className="font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-900 px-1 rounded">B.</code>, <code className="font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-900 px-1 rounded">C.</code>, <code className="font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-900 px-1 rounded">D.</code></li>
+                    <li>Nếu cần cố định phương án nào, đặt thêm dấu <code className="font-bold text-rose-600 bg-white dark:bg-slate-900 px-1 rounded">#</code> liền trước (Ví dụ: <code className="text-rose-600 font-bold">#D. Cả A và B đều đúng</code>).</li>
+                    <li>Đáp án đúng: chỉ cần <strong>gạch chân ký tự</strong> (nhấn <code>Ctrl + U</code>) hoặc <strong>tô màu Đỏ/Xanh</strong> ký tự A., B., C., D.</li>
                   </ul>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-800/60">
-                  <span className="font-bold text-blue-800 dark:text-blue-300 text-sm block mb-2">
-                    Cách 2: Gạch chân chữ (Underline)
-                  </span>
-                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                    Bôi đen chữ cái đáp án hoặc nội dung đáp án đúng, sau đó nhấn tổ hợp phím tắt:
-                  </p>
-                  <div className="mt-3 flex items-center gap-2">
-                    <kbd className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold text-slate-800 dark:text-slate-200 shadow-xs">
-                      Ctrl + U
-                    </kbd>
-                    <span className="text-xs text-slate-500">hoặc nút Underline trên Word</span>
+                {/* Phần II */}
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400 text-base">PHẦN II. Trắc nghiệm Đúng / Sai</span>
+                    <span className="text-[10px] bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-bold px-2 py-0.5 rounded">4 ý a-b-c-d</span>
                   </div>
+                  <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                    <li>Câu hỏi bắt đầu bằng: <code className="font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-1 rounded">Câu 1.</code>, <code className="font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-1 rounded">Question 1.</code></li>
+                    <li>Phải xuống dòng (Enter) trước khi gõ các ý con.</li>
+                    <li>Các ý bắt buộc bắt đầu bằng chữ thường kèm dấu ngoặc đơn: <code className="font-bold text-emerald-600 dark:text-emerald-400 bg-white dark:bg-slate-900 px-1 rounded">a)</code>, <code className="font-bold text-emerald-600 dark:text-emerald-400 bg-white dark:bg-slate-900 px-1 rounded">b)</code>, <code className="font-bold text-emerald-600 dark:text-emerald-400 bg-white dark:bg-slate-900 px-1 rounded">c)</code>, <code className="font-bold text-emerald-600 dark:text-emerald-400 bg-white dark:bg-slate-900 px-1 rounded">d)</code>. Ghim cố định bằng <code className="font-bold text-rose-600">#a)</code>.</li>
+                    <li>Ý nào của câu hỏi là <strong>Đúng</strong> chỉ cần <strong>gạch chân ký tự</strong> (ví dụ: <u>a)</u>) hoặc tô màu đỏ. Ý không gạch chân mặc định là <strong>Sai</strong>.</li>
+                  </ul>
+                </div>
+
+                {/* Phần III */}
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-bold text-purple-600 dark:text-purple-400 text-base">PHẦN III. Trả lời ngắn (Tự luận điền số)</span>
+                    <span className="text-[10px] bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-bold px-2 py-0.5 rounded">Số ≤ 4 ký tự</span>
+                  </div>
+                  <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                    <li>Câu hỏi bắt đầu bằng: <code className="font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-1 rounded">Câu 1.</code>, <code className="font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-1 rounded">Question 1.</code></li>
+                    <li>Phải xuống dòng (Enter) trước khi gõ đáp án.</li>
+                    <li>Nội dung trả lời ngắn được đặt sau ký tự <code className="font-bold text-purple-600 dark:text-purple-400 bg-white dark:bg-slate-900 px-1 rounded">A.</code> (Ví dụ: <code className="font-bold text-purple-600">A. 12</code> hoặc <code className="font-bold text-purple-600">A. 12,5</code> hoặc <code className="font-bold text-purple-600">A. -1,5</code>).</li>
+                    <li><strong className="text-amber-600 dark:text-amber-400">Lưu ý quan trọng:</strong> Nội dung trả lời ngắn bắt buộc là <strong>số với chiều dài không quá 4 ký tự</strong> (theo quy định chung của Bộ GD&amp;ĐT).</li>
+                    <li>Hệ thống sẽ tự động trích xuất kết quả vào bảng Excel ma trận và <strong>tự động ẩn phương án A. trong đề thi của học sinh</strong>.</li>
+                  </ul>
+                </div>
+
+                {/* Phần IV */}
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-bold text-amber-600 dark:text-amber-400 text-base">PHẦN IV. Tự luận</span>
+                    <span className="text-[10px] bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 font-bold px-2 py-0.5 rounded">Trình bày bài giải</span>
+                  </div>
+                  <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                    <li>Câu hỏi bắt đầu bằng: <code className="font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-1 rounded">Câu 1.</code>, <code className="font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-1 rounded">Câu 1:</code>, <code className="font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-1 rounded">Bài 1.</code>, hoặc có thang điểm như <code className="font-bold text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-1 rounded">Câu 1 (2,0 điểm):</code>.</li>
+                    <li>Phải xuống dòng (Enter) trước khi gõ các ý con và trước khi bắt đầu câu tiếp theo.</li>
+                    <li>Nếu câu hỏi có nhiều ý, các ý con có thể đánh số thứ tự dạng: <code className="font-bold text-amber-600 dark:text-amber-400 bg-white dark:bg-slate-900 px-1 rounded">1.</code>, <code className="font-bold text-amber-600 dark:text-amber-400 bg-white dark:bg-slate-900 px-1 rounded">2.</code> (hoặc <code className="font-bold text-amber-600 dark:text-amber-400 bg-white dark:bg-slate-900 px-1 rounded">1)</code>, <code className="font-bold text-amber-600 dark:text-amber-400 bg-white dark:bg-slate-900 px-1 rounded">2)</code>) hoặc chữ cái <code className="font-bold text-amber-600 dark:text-amber-400 bg-white dark:bg-slate-900 px-1 rounded">a.</code>, <code className="font-bold text-amber-600 dark:text-amber-400 bg-white dark:bg-slate-900 px-1 rounded">b.</code>. Hệ thống tự động nhận diện bóc tách thành từng câu và ý con riêng biệt.</li>
+                  </ul>
                 </div>
               </div>
             </div>
 
-            {/* 3. Phân Nhóm & Ghim Đáp Án */}
+            {/* BƯỚC 3: PHÂN NHÓM & XÁC ĐỊNH PHẦN */}
             <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2.5">
                 <Pin className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                <span>3. Phân Nhóm &amp; Ghim Đáp Án Bằng Thẻ Nhận Diện</span>
+                <span>Bước 3. Đặt ký tự phân nhóm &amp; xác định phần (&lt;gX#P&gt;)</span>
               </h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                Đặt thẻ <code className="font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 px-1.5 py-0.5 rounded border border-purple-200 dark:border-purple-800">&lt;gX&gt;</code> ở đầu dòng để kiểm soát thuật toán hoán vị:
+                Áp dụng cho các nhóm câu hỏi chùm, bài đọc hiểu tiếng Anh, hoặc chùm câu hỏi phân loại môn GD KT-PL, Tin học. Đặt thẻ ở đầu dòng trước nhóm câu hỏi:
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
-                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
-                  <code className="font-bold text-purple-600 dark:text-purple-400">&lt;g3&gt;</code> - <strong>Trộn toàn bộ</strong>: Hoán vị cả vị trí câu hỏi lẫn vị trí các đáp án (Chế độ mặc định).
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 space-y-2">
+                  <div className="font-bold text-blue-600 dark:text-blue-400">PHẦN I - Trắc nghiệm ABCD:</div>
+                  <div><code className="font-bold text-purple-600">&lt;g0#1&gt;</code>: Không trộn (bài nghe Audio).</div>
+                  <div><code className="font-bold text-purple-600">&lt;g1#1&gt;</code>: Chỉ hoán vị câu hỏi trong nhóm.</div>
+                  <div><code className="font-bold text-purple-600">&lt;g2#1&gt;</code>: Chỉ hoán vị đáp án (bài đọc hiểu chung).</div>
+                  <div><code className="font-bold text-purple-600">&lt;g3#1&gt;</code>: Hoán vị cả câu hỏi và đáp án.</div>
                 </div>
-                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
-                  <code className="font-bold text-purple-600 dark:text-purple-400">&lt;g2&gt;</code> - <strong>Chỉ trộn đáp án</strong>: Giữ nguyên thứ tự các câu hỏi (Thích hợp cho bài Đọc hiểu tiếng Anh hoặc bài đọc chung đề dẫn).
-                </div>
-                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
-                  <code className="font-bold text-purple-600 dark:text-purple-400">&lt;g1&gt;</code> - <strong>Chỉ trộn câu</strong>: Giữ nguyên thứ tự A, B, C, D của các phương án.
-                </div>
-                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
-                  <code className="font-bold text-purple-600 dark:text-purple-400">&lt;g0&gt;</code> - <strong>Đóng băng hoàn toàn</strong>: Giữ cố định 100% không xáo trộn (Dành cho phần Nghe audio hoặc đề mục đặc biệt).
-                </div>
-              </div>
 
-              <div className="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 flex items-start gap-3 mt-4">
-                <Hash className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-                <div className="text-xs sm:text-sm text-amber-950 dark:text-amber-200 leading-relaxed">
-                  <strong>Tính năng Ghim đáp án cố định:</strong> Thêm dấu <code className="bg-white dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded border border-amber-300 dark:border-amber-800 text-rose-600">#</code> ngay trước ký tự đáp án (Ví dụ: <code>#D. Cả A và B đều đúng</code>). Đáp án có dấu <code>#</code> sẽ luôn nằm ở vị trí ban đầu và không bao giờ bị đổi chỗ.
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 space-y-2">
+                  <div className="font-bold text-emerald-600 dark:text-emerald-400">PHẦN II - Trắc nghiệm Đúng / Sai:</div>
+                  <div><code className="font-bold text-purple-600">&lt;g0#2&gt;</code>: Không trộn câu và không trộn ý.</div>
+                  <div><code className="font-bold text-purple-600">&lt;g1#2&gt;</code>: Chỉ hoán vị các câu hỏi.</div>
+                  <div><code className="font-bold text-purple-600">&lt;g2#2&gt;</code>: Chỉ hoán vị các ý a-b-c-d.</div>
+                  <div><code className="font-bold text-purple-600">&lt;g3#2&gt;</code>: Hoán vị cả câu hỏi và các ý a-b-c-d.</div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 space-y-2">
+                  <div className="font-bold text-purple-600 dark:text-purple-400">PHẦN III - Trả lời ngắn:</div>
+                  <div><code className="font-bold text-purple-600">&lt;g0#3&gt;</code>: Giữ nguyên thứ tự câu hỏi.</div>
+                  <div><code className="font-bold text-purple-600">&lt;g1#3&gt;</code>: Hoán vị các câu hỏi trong nhóm.</div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 space-y-2">
+                  <div className="font-bold text-amber-600 dark:text-amber-400">PHẦN IV - Tự luận:</div>
+                  <div><code className="font-bold text-purple-600">&lt;g0#4&gt;</code>: Giữ nguyên thứ tự các câu tự luận.</div>
+                  <div><code className="font-bold text-purple-600">&lt;g1#4&gt;</code>: Hoán vị thứ tự các câu tự luận.</div>
                 </div>
               </div>
             </div>
@@ -253,10 +260,10 @@ function DocsContent() {
                     <Layers className="w-6 h-6" />
                   </div>
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-2">
-                    Hỗ trợ Nhiều Đề Gốc (Round-Robin)
+                    Bảo toàn Trình tự Phần I &rarr; IV &amp; Chùm câu hỏi
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                    Bạn có thể nạp cùng lúc 2, 3 hoặc nhiều đề thi gốc Word khác nhau. Cơ chế Round-Robin thông minh sẽ tự động chia đều số lượng đề hoán vị cần xuất ra cho từng đề gốc, giúp kỳ thi bảo mật tối đa và đề thi phong phú.
+                    Đảm bảo tuyệt đối các câu hỏi được phân bổ chặt chẽ theo trình tự từ Phần I đến Phần IV. Các nhóm câu hỏi chùm (bài đọc hiểu) được bảo toàn toàn bộ đoạn văn đề dẫn (Passage) và không bị gộp lẫn vào nhau.
                   </p>
                 </div>
               </div>
@@ -267,10 +274,10 @@ function DocsContent() {
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-2">
-                    Ma trận Excel Tự Động
+                    Ma trận Excel Tự Động &amp; Đúng / Sai
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                    Ngay khi hoàn tất trộn, hệ thống xuất kèm bảng ma trận Excel đối chiếu đáp án từng mã đề (Mã 101, 102, 103...). Dữ liệu chuẩn xác 100%, sẵn sàng nhập vào các hệ thống chấm trắc nghiệm bằng điện thoại hoặc máy quét chuyên dụng.
+                    Xuất file Excel đối chiếu đáp án từng mã đề: Phần I ra ký tự A-B-C-D, Phần II ra chuỗi Đúng/Sai (ĐSĐS), Phần III ra số đáp án, Phần IV ra ký hiệu TL. Tương thích trực tiếp với máy quét và phần mềm chấm thi.
                   </p>
                 </div>
               </div>
@@ -281,10 +288,10 @@ function DocsContent() {
                     <FileText className="w-6 h-6" />
                   </div>
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-2">
-                    Tàng Hình Header
+                    Tự Động Ẩn Đáp Án Phần III
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                    Tự động tạo khung tiêu đề 2 cột (Cột trái: Sở &amp; Trường; Cột phải: Tên kỳ thi, mã đề, số báo danh) với đường viền ẩn hoàn toàn. Đảm bảo tính thẩm mỹ, canh lề chuẩn mực theo đúng quy định của Bộ Giáo Dục.
+                    Trong file Word đề thi của học sinh, hệ thống tự động ẩn phương án trả lời ngắn của giáo viên để tránh lộ đáp án, chỉ giữ lại thân câu hỏi chuẩn mực cho học sinh làm bài.
                   </p>
                 </div>
               </div>
@@ -292,7 +299,7 @@ function DocsContent() {
           </div>
         )}
 
-        {/* TAB 3: HẠN CHẾ & CẢNH BÁO RED FLAGS */}
+        {/* TAB 3: 8 LỖI THƯỜNG GẶP & CÁCH KHẮC PHỤC */}
         {activeTab === 'limitations' && (
           <div className="space-y-6 animate-in fade-in duration-200">
             <div className="p-6 sm:p-8 rounded-3xl bg-rose-50/80 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/60 space-y-6">
@@ -302,65 +309,125 @@ function DocsContent() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-rose-900 dark:text-rose-200">
-                    Vùng Cảnh Báo Nghiêm Ngặt (Red Flags)
+                    Cẩm nang Khắc phục 8 Lỗi Thường Gặp
                   </h3>
                   <span className="text-xs text-rose-700 dark:text-rose-400 font-medium">
-                    Tuân thủ tuyệt đối các quy tắc sau để tránh lỗi phân tích lõi XML
+                    Hướng dẫn chi tiết nguyên nhân và cách sửa 8 lỗi định dạng phổ biến nhất
                   </span>
                 </div>
               </div>
 
-              <p className="text-xs sm:text-sm text-rose-900 dark:text-rose-200 leading-relaxed font-medium">
-                Trình phân tích đọc trực tiếp cấu trúc cây phần tử XML của file Word (.docx) nên rất nhạy cảm với các định dạng phi chuẩn. Để đảm bảo 100% đề thi được phân tích trơn tru, vui lòng tránh các điều sau:
-              </p>
-
-              <div className="space-y-3.5 text-xs sm:text-sm text-slate-800 dark:text-slate-200">
-                <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200/80 dark:border-rose-900/50 flex items-start gap-3">
-                  <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
-                  <div>
-                    <strong className="block text-slate-900 dark:text-white mb-0.5">
-                      Không sử dụng Bảng (Table), Textbox hoặc SmartArt cho câu hỏi và đáp án
-                    </strong>
-                    <span className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                      Các phần tử nằm trong Table hoặc Textbox độc lập sẽ bị thuật toán đọc tuần tự bỏ qua, dẫn đến việc thiếu câu hỏi hoặc thiếu đáp án.
-                    </span>
+              <div className="space-y-4 text-xs sm:text-sm text-slate-800 dark:text-slate-200">
+                {/* Lỗi 1 */}
+                <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200/80 dark:border-rose-900/50 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 font-bold text-xs">Lỗi 1</span>
+                    <strong className="text-slate-900 dark:text-white text-sm">Câu hỏi hoặc đáp án để trong Bảng (Table)</strong>
                   </div>
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <strong>Nguyên nhân:</strong> Để các đáp án canh thẳng hàng, giáo viên hay soạn đáp án nằm trong bảng (Table). Việc này khiến hệ thống không thể đọc tuần tự câu hỏi. Việc canh hàng thẳng đẹp sẽ do thuật toán Smart Layout tự động xử lý.
+                  </p>
+                  <p className="text-emerald-700 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                    &rarr; Cách sửa: Hãy copy toàn bộ câu hỏi và đáp án ra ngoài Bảng, gõ như văn bản thông thường.
+                  </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200/80 dark:border-rose-900/50 flex items-start gap-3">
-                  <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
-                  <div>
-                    <strong className="block text-slate-900 dark:text-white mb-0.5">
-                      Hình ảnh bắt buộc phải để chế độ &quot;In line with text&quot;
-                    </strong>
-                    <span className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                      Nếu để chế độ ảnh trôi nổi (Behind text, In front of text, Square...), hình ảnh sẽ bị xê dịch hoặc mất liên kết với câu hỏi tương ứng sau khi hoán vị.
-                    </span>
+                {/* Lỗi 2 */}
+                <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200/80 dark:border-rose-900/50 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 font-bold text-xs">Lỗi 2</span>
+                    <strong className="text-slate-900 dark:text-white text-sm">Gõ sai, thiếu từ khóa bắt đầu của câu hỏi</strong>
                   </div>
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <strong>Nguyên nhân:</strong> Chèn thêm ký tự nhận thức như <code>Câu 1 (NB):</code> hoặc thiếu dấu chấm/hai chấm như <code>Câu 2 Hãy tính...</code> khiến hệ thống không nhận dạng được câu hỏi.
+                  </p>
+                  <p className="text-emerald-700 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                    &rarr; Cách sửa: Xóa cụm ký tự (NB), (TH) nếu có và gõ thêm dấu chấm (.) hoặc hai chấm (:) liền sau số câu (ví dụ: <code>Câu 1.</code> hoặc <code>Câu 2:</code>).
+                  </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200/80 dark:border-rose-900/50 flex items-start gap-3">
-                  <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
-                  <div>
-                    <strong className="block text-slate-900 dark:text-white mb-0.5">
-                      Tuyệt đối không nhấn phím Enter để ngắt dòng bên trong một đáp án
-                    </strong>
-                    <span className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                      Phím Enter trong Word tạo ra thẻ đoạn văn <code>&lt;w:p&gt;</code> mới, khiến thuật toán hiểu nhầm là câu hỏi mới hoặc làm đứt đoạn đáp án. Nếu nội dung dài, hãy để Word tự động tràn dòng tự nhiên.
-                    </span>
+                {/* Lỗi 3 */}
+                <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200/80 dark:border-rose-900/50 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 font-bold text-xs">Lỗi 3</span>
+                    <strong className="text-slate-900 dark:text-white text-sm">Gõ sai, thiếu từ khóa bắt đầu của các đáp án</strong>
                   </div>
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <strong>Nguyên nhân:</strong> Thiếu dấu chấm sau chữ cái đáp án (ví dụ: <code>B Hà Nội</code>) hoặc có khoảng cách thừa trước dấu chấm (ví dụ: <code>D . Đà Nẵng</code>).
+                  </p>
+                  <p className="text-emerald-700 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                    &rarr; Cách sửa: Gõ thêm dấu chấm (.) liền sau ký tự B và xóa khoảng cách giữa ký tự D và dấu chấm (ví dụ: <code>B.</code>, <code>D.</code>).
+                  </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200/80 dark:border-rose-900/50 flex items-start gap-3">
-                  <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
-                  <div>
-                    <strong className="block text-slate-900 dark:text-white mb-0.5">
-                      Cẩn trọng với tính năng Đánh số tự động (Auto-Numbering)
-                    </strong>
-                    <span className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                      Khi dùng Auto-Numbering của Word, các ký tự A., B., C., D. là số đếm ảo và không tồn tại trong thẻ văn bản XML thực tế. Khuyến cáo nên gõ trực tiếp ký tự phím kèm dấu chấm để độ nhận diện đạt 100%.
-                    </span>
+                {/* Lỗi 4 */}
+                <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200/80 dark:border-rose-900/50 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 font-bold text-xs">Lỗi 4</span>
+                    <strong className="text-slate-900 dark:text-white text-sm">Không xuống dòng giữa câu hỏi và đáp án</strong>
                   </div>
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <strong>Nguyên nhân:</strong> Gõ đáp án A. dính liền trên cùng dòng với câu hỏi (ví dụ: <code>Câu 1. Thủ đô là gì? A. Hà Nội</code>).
+                  </p>
+                  <p className="text-emerald-700 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                    &rarr; Cách sửa: Đặt con trỏ chuột trước chữ cái A. và nhấn phím ENTER để ngắt đáp án xuống dòng riêng.
+                  </p>
+                </div>
+
+                {/* Lỗi 5 */}
+                <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200/80 dark:border-rose-900/50 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 font-bold text-xs">Lỗi 5</span>
+                    <strong className="text-slate-900 dark:text-white text-sm">Không xuống dòng giữa đáp án câu trên và câu hỏi tiếp theo (Dính câu)</strong>
+                  </div>
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <strong>Nguyên nhân:</strong> Nhìn trong Word tưởng như đã xuống dòng (do Word tự tràn dòng) nhưng thực chất chưa có dấu ngắt đoạn Enter. Khi đưa lên trộn sẽ bị lỗi dính câu.
+                  </p>
+                  <p className="text-emerald-700 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                    &rarr; Cách sửa: Bật biểu tượng Show/Hide Paragraph Mark (&para;) trong Word, đưa con trỏ về cuối đáp án D và nhấn ENTER xuống dòng.
+                  </p>
+                </div>
+
+                {/* Lỗi 6 */}
+                <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200/80 dark:border-rose-900/50 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 font-bold text-xs">Lỗi 6</span>
+                    <strong className="text-slate-900 dark:text-white text-sm">Sử dụng tính năng Numbering tự động của MS Word</strong>
+                  </div>
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <strong>Nguyên nhân:</strong> Các đáp án A., B., C., D. hoặc Câu 1, Câu 2 được đánh số tự động qua tính năng Numbering của Word. Ký tự này là đếm ảo, không tồn tại trong văn bản XML thực tế.
+                  </p>
+                  <p className="text-emerald-700 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                    &rarr; Cách sửa: Bôi đen toàn bộ đề thi, tắt tính năng Numbering (chọn None) và gõ tay lại như ký tự thông thường.
+                  </p>
+                </div>
+
+                {/* Lỗi 7 */}
+                <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200/80 dark:border-rose-900/50 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 font-bold text-xs">Lỗi 7</span>
+                    <strong className="text-slate-900 dark:text-white text-sm">Nhận nhầm từ khóa đáp án từ đơn vị, đại lượng, tên riêng</strong>
+                  </div>
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <strong>Nguyên nhân:</strong> Các đơn vị như Ampe (A), Culong (C), nguyên tố hóa học, hoặc tên nhân vật/địa danh đi sau có dấu chấm.
+                  </p>
+                  <p className="text-emerald-700 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                    &rarr; Cách sửa: Nhấn Enter xuống dòng để mỗi đáp án nằm trên 1 dòng riêng biệt, hoặc xóa dấu chấm (.) liền sau chữ cái tên nhân vật/đơn vị đo.
+                  </p>
+                </div>
+
+                {/* Lỗi 8 */}
+                <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-rose-200/80 dark:border-rose-900/50 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 font-bold text-xs">Lỗi 8</span>
+                    <strong className="text-slate-900 dark:text-white text-sm">Mất hình ảnh hoặc hình nhảy lộn xộn sau khi trộn</strong>
+                  </div>
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <strong>Nguyên nhân:</strong> Hình ảnh đang ở chế độ trôi nổi (Behind text, In front of text, Square...). Khi hoán vị câu hỏi, hình không gắn liền với dòng văn bản nên sẽ bị xô lệch vị trí.
+                  </p>
+                  <p className="text-emerald-700 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                    &rarr; Cách sửa: Chọn hình ảnh &rarr; Format Picture &rarr; Position &rarr; Chọn "In Line with Text" để ảnh nằm trên một dòng riêng biệt gắn chặt vào câu hỏi.
+                  </p>
                 </div>
               </div>
             </div>
@@ -371,10 +438,10 @@ function DocsContent() {
         <div className="mt-12 p-6 rounded-3xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-blue-950/50 border border-blue-200/80 dark:border-blue-900/50 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <h4 className="font-bold text-slate-900 dark:text-white text-base">
-              Bạn đã nắm rõ các quy chuẩn định dạng?
+              Bạn đã kiểm tra đề thi theo đúng 8 quy chuẩn?
             </h4>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-0.5">
-              Hãy truy cập ngay không gian làm việc để nạp file và xuất bản bộ đề đầu tiên.
+              Hãy truy cập ngay công cụ trộn đề để hệ thống phân tích và kiểm tra tính hợp lệ.
             </p>
           </div>
           <Link
